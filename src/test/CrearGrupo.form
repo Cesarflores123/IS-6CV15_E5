@@ -319,41 +319,42 @@
         <Component class="javax.swing.JComboBox" name="combo_asignatura">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="34">
-                <StringItem index="0" value="F&#xcd;SICA CL&#xc1;SICA"/>
-                <StringItem index="1" value="FUNDAMENTOS DEL ALGEBRA"/>
-                <StringItem index="2" value="FUNDAMENTOS DE PROGRAMACI&#xd3;N"/>
-                <StringItem index="3" value="QU&#xcd;MICA B&#xc1;SICA"/>
-                <StringItem index="4" value="&#xc1;LGEBRA LINEAL"/>
-                <StringItem index="5" value="C&#xc1;LCULO VECTORIAL"/>
-                <StringItem index="6" value="ELECTRICIDAD Y MAGNETISMO"/>
-                <StringItem index="7" value=" MATEM&#xc1;TICAS DISCRETAS"/>
-                <StringItem index="8" value="PROGRAMACI&#xd3;N ORIENTADA A OBJETOS"/>
-                <StringItem index="9" value="CIRCUITOS DE CA Y CD"/>
-                <StringItem index="10" value="CIRCUITOS L&#xd3;GICOS I"/>
-                <StringItem index="11" value="ESTRUCTURA DE DATOS"/>
-                <StringItem index="12" value="LENGUAJES DE BAJO NIVEL"/>
-                <StringItem index="13" value="AN&#xc1;LISIS NUM&#xc9;RICO"/>
-                <StringItem index="14" value="CIRCUITOS L&#xd3;GICOS II"/>
-                <StringItem index="15" value="ELECTR&#xd3;NICA ANAL&#xd3;GICA"/>
-                <StringItem index="16" value="TEOR&#xcd;A DE AUT&#xd3;MATAS"/>
-                <StringItem index="17" value="AN&#xc1;LISIS DE SE&#xd1;ALES ANAL&#xd3;GICAS"/>
-                <StringItem index="18" value="AN&#xc1;LISIS DE ALGORITMOS"/>
-                <StringItem index="19" value="COMPILADORES"/>
-                <StringItem index="20" value="ORGANIZACI&#xd3;N DE COMPUTADORAS"/>
-                <StringItem index="21" value="ARQUITECTURA DE COMPUTADORAS"/>
-                <StringItem index="22" value="INGENIER&#xcd;A DE SOFTWARE"/>
-                <StringItem index="23" value="MODULACI&#xd3;N DIGITAL"/>
-                <StringItem index="24" value="SISTEMAS OPERATIVOS"/>
-                <StringItem index="25" value="TEOR&#xcd;A DE CONTROL ANAL&#xd3;GICO"/>
-                <StringItem index="26" value="BASES DE DATOS"/>
-                <StringItem index="27" value="NUEVAS TECNOLOG&#xcd;AS EN LA TRANSFERENCIA"/>
-                <StringItem index="28" value="DE LA INFORMACI&#xd3;N"/>
-                <StringItem index="29" value="TEOR&#xcd;A DE CONTROL DIGITAL"/>
-                <StringItem index="30" value="TEOR&#xcd;A DE LA INFORMACI&#xd3;N Y CODIFICACI&#xd3;N"/>
-                <StringItem index="31" value="REDES DE COMPUTADORAS"/>
-                <StringItem index="32" value="SISTEMAS DISTRIBUIDOS"/>
-                <StringItem index="33" value=" "/>
+              <StringArray count="35">
+                <StringItem index="0" value="ACTIVIDAD EXTRACURRICULAR"/>
+                <StringItem index="1" value="F&#xcd;SICA CL&#xc1;SICA"/>
+                <StringItem index="2" value="FUNDAMENTOS DEL ALGEBRA"/>
+                <StringItem index="3" value="FUNDAMENTOS DE PROGRAMACI&#xd3;N"/>
+                <StringItem index="4" value="QU&#xcd;MICA B&#xc1;SICA"/>
+                <StringItem index="5" value="&#xc1;LGEBRA LINEAL"/>
+                <StringItem index="6" value="C&#xc1;LCULO VECTORIAL"/>
+                <StringItem index="7" value="ELECTRICIDAD Y MAGNETISMO"/>
+                <StringItem index="8" value=" MATEM&#xc1;TICAS DISCRETAS"/>
+                <StringItem index="9" value="PROGRAMACI&#xd3;N ORIENTADA A OBJETOS"/>
+                <StringItem index="10" value="CIRCUITOS DE CA Y CD"/>
+                <StringItem index="11" value="CIRCUITOS L&#xd3;GICOS I"/>
+                <StringItem index="12" value="ESTRUCTURA DE DATOS"/>
+                <StringItem index="13" value="LENGUAJES DE BAJO NIVEL"/>
+                <StringItem index="14" value="AN&#xc1;LISIS NUM&#xc9;RICO"/>
+                <StringItem index="15" value="CIRCUITOS L&#xd3;GICOS II"/>
+                <StringItem index="16" value="ELECTR&#xd3;NICA ANAL&#xd3;GICA"/>
+                <StringItem index="17" value="TEOR&#xcd;A DE AUT&#xd3;MATAS"/>
+                <StringItem index="18" value="AN&#xc1;LISIS DE SE&#xd1;ALES ANAL&#xd3;GICAS"/>
+                <StringItem index="19" value="AN&#xc1;LISIS DE ALGORITMOS"/>
+                <StringItem index="20" value="COMPILADORES"/>
+                <StringItem index="21" value="ORGANIZACI&#xd3;N DE COMPUTADORAS"/>
+                <StringItem index="22" value="ARQUITECTURA DE COMPUTADORAS"/>
+                <StringItem index="23" value="INGENIER&#xcd;A DE SOFTWARE"/>
+                <StringItem index="24" value="MODULACI&#xd3;N DIGITAL"/>
+                <StringItem index="25" value="SISTEMAS OPERATIVOS"/>
+                <StringItem index="26" value="TEOR&#xcd;A DE CONTROL ANAL&#xd3;GICO"/>
+                <StringItem index="27" value="BASES DE DATOS"/>
+                <StringItem index="28" value="NUEVAS TECNOLOG&#xcd;AS EN LA TRANSFERENCIA"/>
+                <StringItem index="29" value="DE LA INFORMACI&#xd3;N"/>
+                <StringItem index="30" value="TEOR&#xcd;A DE CONTROL DIGITAL"/>
+                <StringItem index="31" value="TEOR&#xcd;A DE LA INFORMACI&#xd3;N Y CODIFICACI&#xd3;N"/>
+                <StringItem index="32" value="REDES DE COMPUTADORAS"/>
+                <StringItem index="33" value="SISTEMAS DISTRIBUIDOS"/>
+                <StringItem index="34" value=" "/>
               </StringArray>
             </Property>
           </Properties>

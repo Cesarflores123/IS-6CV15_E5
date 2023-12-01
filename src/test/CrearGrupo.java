@@ -4,9 +4,10 @@
  */
 package test;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.JFrame;
+import coneccion.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.sql.*;
 
 
 /**
@@ -19,10 +20,12 @@ public class CrearGrupo extends javax.swing.JFrame {
      * Creates new form CrearGrupo
      */
   
+    Conexion conectar = Conexion.getInstance();
     
     public CrearGrupo() {
         
         initComponents();
+        
         this.setLocationRelativeTo(null);
         regresar();
     }
@@ -110,7 +113,7 @@ public class CrearGrupo extends javax.swing.JFrame {
 
         combo_laboratorio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "COMPUTACION 1", "COMPUTACION 2", "UDI 1", "UDI 2", "UDI 3", "UDI 4", "UDI 5", "UDI 6", "UDI 7", "UDI 8", "UDI 9", "UDI 10", "MICROPROCESADORES" }));
 
-        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "FÍSICA CLÁSICA", "FUNDAMENTOS DEL ALGEBRA", "FUNDAMENTOS DE PROGRAMACIÓN", "QUÍMICA BÁSICA", "ÁLGEBRA LINEAL", "CÁLCULO VECTORIAL", "ELECTRICIDAD Y MAGNETISMO", " MATEMÁTICAS DISCRETAS", "PROGRAMACIÓN ORIENTADA A OBJETOS", "CIRCUITOS DE CA Y CD", "CIRCUITOS LÓGICOS I", "ESTRUCTURA DE DATOS", "LENGUAJES DE BAJO NIVEL", "ANÁLISIS NUMÉRICO", "CIRCUITOS LÓGICOS II", "ELECTRÓNICA ANALÓGICA", "TEORÍA DE AUTÓMATAS", "ANÁLISIS DE SEÑALES ANALÓGICAS", "ANÁLISIS DE ALGORITMOS", "COMPILADORES", "ORGANIZACIÓN DE COMPUTADORAS", "ARQUITECTURA DE COMPUTADORAS", "INGENIERÍA DE SOFTWARE", "MODULACIÓN DIGITAL", "SISTEMAS OPERATIVOS", "TEORÍA DE CONTROL ANALÓGICO", "BASES DE DATOS", "NUEVAS TECNOLOGÍAS EN LA TRANSFERENCIA", "DE LA INFORMACIÓN", "TEORÍA DE CONTROL DIGITAL", "TEORÍA DE LA INFORMACIÓN Y CODIFICACIÓN", "REDES DE COMPUTADORAS", "SISTEMAS DISTRIBUIDOS", " " }));
+        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ACTIVIDAD EXTRACURRICULAR", "FÍSICA CLÁSICA", "FUNDAMENTOS DEL ALGEBRA", "FUNDAMENTOS DE PROGRAMACIÓN", "QUÍMICA BÁSICA", "ÁLGEBRA LINEAL", "CÁLCULO VECTORIAL", "ELECTRICIDAD Y MAGNETISMO", " MATEMÁTICAS DISCRETAS", "PROGRAMACIÓN ORIENTADA A OBJETOS", "CIRCUITOS DE CA Y CD", "CIRCUITOS LÓGICOS I", "ESTRUCTURA DE DATOS", "LENGUAJES DE BAJO NIVEL", "ANÁLISIS NUMÉRICO", "CIRCUITOS LÓGICOS II", "ELECTRÓNICA ANALÓGICA", "TEORÍA DE AUTÓMATAS", "ANÁLISIS DE SEÑALES ANALÓGICAS", "ANÁLISIS DE ALGORITMOS", "COMPILADORES", "ORGANIZACIÓN DE COMPUTADORAS", "ARQUITECTURA DE COMPUTADORAS", "INGENIERÍA DE SOFTWARE", "MODULACIÓN DIGITAL", "SISTEMAS OPERATIVOS", "TEORÍA DE CONTROL ANALÓGICO", "BASES DE DATOS", "NUEVAS TECNOLOGÍAS EN LA TRANSFERENCIA", "DE LA INFORMACIÓN", "TEORÍA DE CONTROL DIGITAL", "TEORÍA DE LA INFORMACIÓN Y CODIFICACIÓN", "REDES DE COMPUTADORAS", "SISTEMAS DISTRIBUIDOS", " " }));
 
         jLabel7.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -265,7 +268,7 @@ public class CrearGrupo extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -303,6 +306,47 @@ public class CrearGrupo extends javax.swing.JFrame {
         CGEscanear escanear = new CGEscanear();
         escanear.setVisible(true);
         
+        try {
+            
+            Connection conexion = conectar.conectar();
+            PreparedStatement insertarg = conexion.prepareStatement("INSERT INTO grupo values(?, ?, ?)");
+            PreparedStatement insertard = conexion.prepareStatement("INSERT INTO docente values(?, ?, ?, ?)");
+            PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura values(?, ?)");
+            PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio values(?, ?)");
+            PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar values(?, ?)");
+            
+            insertarg.setString(1, "5");
+            insertarg.setString(2, combo_semestre.getSelectedItem().toString() + "C" + combo_turno.getSelectedItem().toString()
+                + combo_ngrupo.getSelectedItem().toString() + combo_nmateria.getSelectedItem().toString());
+            insertarg.setString(3, "5");
+            
+            insertard.setString(1, "5");
+            insertard.setString(2, (String) txt_Nombre.getText().trim());
+            insertard.setString(3, (String) txt_Apaterno.getText().trim());
+            insertard.setString(4, (String) txt_Amaterno.getText().trim());
+            
+            insertara.setString(1, "5");
+            insertara.setString(2, (String) combo_asignatura.getSelectedItem().toString());
+            
+            insertarl.setString(1, "5");
+            insertarl.setString(2, (String) combo_asignatura.getSelectedItem().toString());
+            
+            insertarc.setString(1, "5");
+            insertarc.setString(2, (String) combo_ciclo.getSelectedItem().toString());
+            
+            insertard.executeUpdate();
+            insertarg.executeUpdate();
+            insertara.executeUpdate();
+            insertarl.executeUpdate();
+            insertarc.executeUpdate();
+            
+            JOptionPane.showMessageDialog(null, "Datos Registrados");
+            
+            conectar.cerrarConexion();
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Error: " + e);
+        }
     }//GEN-LAST:event_jbtnEscanearActionPerformed
     
 //Pantalla anterios

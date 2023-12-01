@@ -26,7 +26,16 @@ public class Conexion {
         }
         return conexion;
     }
-    
+    public void cerrarConexion() throws SQLException{
+        try{
+            conexion.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error: " + e);
+            conexion.close();
+        } finally{
+            conexion.close();
+        }
+    }
     public static Conexion getInstance(){
         if(instancia == null){
             instancia = new Conexion();

@@ -4,6 +4,8 @@
  */
 package test;
 
+import coneccion.Conexion;
+
 /**
  *
  * @author Gabriela
@@ -15,6 +17,8 @@ public class Inicio extends javax.swing.JFrame {
      */
     public Inicio() {
         initComponents();
+        Conexion conexion = new Conexion();
+        conexion.conectar();
      
     }
 

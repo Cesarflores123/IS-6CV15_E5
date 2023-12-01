@@ -4,6 +4,8 @@
  */
 package test;
 
+import damain.TextPrompt;
+
 
 /**
  *
@@ -16,7 +18,7 @@ public class VerGrupos extends javax.swing.JFrame {
      */
     public VerGrupos() {
         initComponents();    
-       
+       TextPrompt placeholder = new TextPrompt("Buscar grupo", jTextField1);
     }
 
     /**

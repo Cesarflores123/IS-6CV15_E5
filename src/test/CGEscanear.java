@@ -4,6 +4,10 @@
  */
 package test;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+
 
 /**
  *
@@ -16,7 +20,8 @@ public class CGEscanear extends javax.swing.JFrame {
      */
     public CGEscanear() {
         initComponents();
-        
+        this.setLocationRelativeTo(null);
+        regresar();
     }
 
     /**
@@ -136,7 +141,23 @@ public class CGEscanear extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
- 
+    public void regresar(){
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter (){
+                public void windowAnterior(WindowEvent e){
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void pantallaAnterior(){
+        CrearGrupo vCGrupo = new CrearGrupo();
+        vCGrupo.setVisible(true);
+    }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed

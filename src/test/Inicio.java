@@ -5,6 +5,10 @@
 package test;
 
 import coneccion.Conexion;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,6 +23,9 @@ public class Inicio extends javax.swing.JFrame {
         initComponents();
         Conexion conexion = new Conexion();
         conexion.conectar();
+        
+        this.setLocationRelativeTo(null);
+        cerrar();
      
     }
 
@@ -27,8 +34,8 @@ public class Inicio extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jbtnCrearGrupo = new javax.swing.JButton();
+        jbtnVerGrupo = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -41,21 +48,21 @@ public class Inicio extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(108, 23, 43));
         jPanel1.setPreferredSize(new java.awt.Dimension(655, 425));
 
-        jButton1.setBackground(java.awt.Color.lightGray);
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton1.setText("Crear grupos");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbtnCrearGrupo.setBackground(java.awt.Color.lightGray);
+        jbtnCrearGrupo.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jbtnCrearGrupo.setText("Crear grupos");
+        jbtnCrearGrupo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbtnCrearGrupoActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(java.awt.Color.lightGray);
-        jButton2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton2.setText("Ver grupos");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jbtnVerGrupo.setBackground(java.awt.Color.lightGray);
+        jbtnVerGrupo.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jbtnVerGrupo.setText("Ver grupos");
+        jbtnVerGrupo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jbtnVerGrupoActionPerformed(evt);
             }
         });
 
@@ -127,9 +134,9 @@ public class Inicio extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(139, 139, 139)
-                .addComponent(jButton1)
+                .addComponent(jbtnCrearGrupo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addComponent(jbtnVerGrupo)
                 .addGap(144, 144, 144))
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -146,8 +153,8 @@ public class Inicio extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jbtnCrearGrupo)
+                    .addComponent(jbtnVerGrupo))
                 .addGap(46, 46, 46))
         );
 
@@ -166,16 +173,38 @@ public class Inicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     //metodo confirmar cierre Jframe - Inicio
+    public void cerrar(){
+        try{
+            this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            addWindowListener(new WindowAdapter(){
+                public void windowClosing(WindowEvent e){
+                    confirmarSalida();
+                }
+            });
+            this.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //Confirmas salida
+    public void confirmarSalida(){
+        int valor = JOptionPane.showConfirmDialog(null, "Esta seguro de cerrar la aplicacion", "Advertencia", JOptionPane.YES_NO_OPTION);
+        if (valor == JOptionPane.YES_OPTION){
+            System.exit(0);
+        }
+    }
    
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jbtnVerGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnVerGrupoActionPerformed
         // TODO add your handling code here:
-     
-    }//GEN-LAST:event_jButton2ActionPerformed
+        VerGrupos vVerGrupos = new VerGrupos();
+        vVerGrupos.setVisible(true);     
+    }//GEN-LAST:event_jbtnVerGrupoActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jbtnCrearGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCrearGrupoActionPerformed
         // TODO add your handling code here:
-     
-    }//GEN-LAST:event_jButton1ActionPerformed
+        CrearGrupo vCrearGrupo = new CrearGrupo();
+        vCrearGrupo.setVisible(true);
+    }//GEN-LAST:event_jbtnCrearGrupoActionPerformed
 
     
     /**
@@ -214,8 +243,6 @@ public class Inicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -223,5 +250,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JButton jbtnCrearGrupo;
+    private javax.swing.JButton jbtnVerGrupo;
     // End of variables declaration//GEN-END:variables
 }

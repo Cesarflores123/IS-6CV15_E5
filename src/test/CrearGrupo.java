@@ -4,6 +4,10 @@
  */
 package test;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+
 
 /**
  *
@@ -19,6 +23,8 @@ public class CrearGrupo extends javax.swing.JFrame {
     public CrearGrupo() {
         
         initComponents();
+        this.setLocationRelativeTo(null);
+        regresar();
     }
 
     /**
@@ -269,13 +275,33 @@ public class CrearGrupo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //Pantalla anterios
+    public void regresar(){
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter (){
+                public void windowAnterior(WindowEvent e){
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void pantallaAnterior(){
+        Inicio vInicio = new Inicio();
+        vInicio.setVisible(true);
+    }
+    
     private void combo_semestreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_semestreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_combo_semestreActionPerformed
 
     private void jbtnEscanearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEscanearActionPerformed
         // TODO add your handling code here:
-        
+        CGEscanear escanear = new CGEscanear();
+        escanear.setVisible(true);
         
     }//GEN-LAST:event_jbtnEscanearActionPerformed
     

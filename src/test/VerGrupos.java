@@ -5,6 +5,9 @@
 package test;
 
 import damain.TextPrompt;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 
 /**
@@ -18,7 +21,10 @@ public class VerGrupos extends javax.swing.JFrame {
      */
     public VerGrupos() {
         initComponents();    
-       TextPrompt placeholder = new TextPrompt("Buscar grupo", jTextField1);
+        TextPrompt placeholder = new TextPrompt("Buscar grupo", jTextField1);
+        this.setLocationRelativeTo(null);
+        objetos();
+        regresar();
     }
 
     /**
@@ -33,8 +39,6 @@ public class VerGrupos extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -65,34 +69,15 @@ public class VerGrupos extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setPreferredSize(new java.awt.Dimension(300, 300));
 
-        jLabel1.setText("jLabel1");
-
-        jButton1.setText("Ver");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(105, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(64, 64, 64)
-                .addComponent(jButton1)
-                .addGap(88, 88, 88))
+            .addGap(0, 430, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jButton1))
-                .addContainerGap(210, Short.MAX_VALUE))
+            .addGap(0, 274, Short.MAX_VALUE)
         );
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/buscar.png"))); // NOI18N
@@ -104,9 +89,9 @@ public class VerGrupos extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(105, 105, 105)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(119, 119, 119)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton2))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(107, 107, 107)
@@ -142,8 +127,55 @@ public class VerGrupos extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     
+      
+    public void objetos(){
+        Font personalizar = new Font("Times New Roman", Font.BOLD, 14);
+        JLabel etiqueta1 = new JLabel("6CV15-20241");
+        JButton boton1= new JButton("VER");
+        etiqueta1.setFont(personalizar);
+        boton1.setFont(personalizar);
+        
+        // Configurar la posición y el tamaño de las etiquetas (x, y, ancho, alto)
+        etiqueta1.setBounds(75, 30, 100, 30);
+        boton1.setBounds(250, 30, 100, 30);
+        
+         boton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VGVer grupo = new VGVer();
+                grupo.setValor("6CV15");
+                grupo.setVisible(true);              
+            }
+        });
+
+        // Agregar las etiquetas al panel o contenedor
+        jPanel2.add(etiqueta1);
+        jPanel2.add(boton1);
+
+        // Actualizar el panel para que se muestren las nuevas etiquetas
+        jPanel2.validate();
+        jPanel2.repaint();
+    }
+   
+    
+    public void regresar(){
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter (){
+                public void windowAnterior(WindowEvent e){
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void pantallaAnterior(){
+        Inicio vInicio = new Inicio();
+        vInicio.setVisible(true);
+    }
     
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
@@ -161,10 +193,6 @@ public class VerGrupos extends javax.swing.JFrame {
     private void jTextField1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusGained
         jTextField1.setText("");
     }//GEN-LAST:event_jTextField1FocusGained
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,9 +230,7 @@ public class VerGrupos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField jTextField1;

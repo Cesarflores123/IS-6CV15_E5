@@ -315,23 +315,23 @@ public class CrearGrupo extends javax.swing.JFrame {
             PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio values(?, ?)");
             PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar values(?, ?)");
             
-            insertarg.setString(1, "5");
+            insertarg.setString(1, "2");
             insertarg.setString(2, combo_semestre.getSelectedItem().toString() + "C" + combo_turno.getSelectedItem().toString()
                 + combo_ngrupo.getSelectedItem().toString() + combo_nmateria.getSelectedItem().toString());
-            insertarg.setString(3, "5");
+            insertarg.setString(3, "2");
             
-            insertard.setString(1, "5");
+            insertard.setString(1, "2");
             insertard.setString(2, (String) txt_Nombre.getText().trim());
             insertard.setString(3, (String) txt_Apaterno.getText().trim());
             insertard.setString(4, (String) txt_Amaterno.getText().trim());
             
-            insertara.setString(1, "5");
+            insertara.setString(1, "2");
             insertara.setString(2, (String) combo_asignatura.getSelectedItem().toString());
             
-            insertarl.setString(1, "5");
+            insertarl.setString(1, "2");
             insertarl.setString(2, (String) combo_asignatura.getSelectedItem().toString());
             
-            insertarc.setString(1, "5");
+            insertarc.setString(1, "2");
             insertarc.setString(2, (String) combo_ciclo.getSelectedItem().toString());
             
             insertard.executeUpdate();

@@ -5,10 +5,10 @@
 package test;
 
 import coneccion.*;
+import damain.ContadorID;
 import java.awt.event.*;
 import javax.swing.*;
 import java.sql.*;
-
 
 /**
  *
@@ -19,13 +19,12 @@ public class CrearGrupo extends javax.swing.JFrame {
     /**
      * Creates new form CrearGrupo
      */
-  
     Conexion conectar = Conexion.getInstance();
-    
+
     public CrearGrupo() {
-        
+
         initComponents();
-        
+
         this.setLocationRelativeTo(null);
         regresar();
     }
@@ -279,11 +278,11 @@ public class CrearGrupo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     //Pantalla anterios
-    public void regresar(){
+    public void regresar() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            addWindowListener(new WindowAdapter (){
-                public void windowAnterior(WindowEvent e){
+            addWindowListener(new WindowAdapter() {
+                public void windowAnterior(WindowEvent e) {
                     pantallaAnterior();
                 }
             });
@@ -291,12 +290,12 @@ public class CrearGrupo extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
-    public void pantallaAnterior(){
+
+    public void pantallaAnterior() {
         Inicio vInicio = new Inicio();
         vInicio.setVisible(true);
     }
-    
+
     private void combo_semestreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_semestreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_combo_semestreActionPerformed
@@ -305,52 +304,71 @@ public class CrearGrupo extends javax.swing.JFrame {
         // TODO add your handling code here:
         CGEscanear escanear = new CGEscanear();
         escanear.setVisible(true);
-        
+
         try {
-            
             Connection conexion = conectar.conectar();
-            PreparedStatement insertarg = conexion.prepareStatement("INSERT INTO grupo values(?, ?, ?)");
-            PreparedStatement insertard = conexion.prepareStatement("INSERT INTO docente values(?, ?, ?, ?)");
-            PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura values(?, ?)");
-            PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio values(?, ?)");
-            PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar values(?, ?)");
-            
-            insertarg.setString(1, "2");
-            insertarg.setString(2, combo_semestre.getSelectedItem().toString() + "C" + combo_turno.getSelectedItem().toString()
-                + combo_ngrupo.getSelectedItem().toString() + combo_nmateria.getSelectedItem().toString());
-            insertarg.setString(3, "2");
-            
-            insertard.setString(1, "2");
-            insertard.setString(2, (String) txt_Nombre.getText().trim());
-            insertard.setString(3, (String) txt_Apaterno.getText().trim());
-            insertard.setString(4, (String) txt_Amaterno.getText().trim());
-            
-            insertara.setString(1, "2");
-            insertara.setString(2, (String) combo_asignatura.getSelectedItem().toString());
-            
-            insertarl.setString(1, "2");
-            insertarl.setString(2, (String) combo_asignatura.getSelectedItem().toString());
-            
-            insertarc.setString(1, "2");
-            insertarc.setString(2, (String) combo_ciclo.getSelectedItem().toString());
-            
+
+            conexion.setAutoCommit(false);
+
+            // Preparar las consultas SQL con autoincrement 'Statement.RETURN_GENERATED_KEYS'
+            PreparedStatement insertarg = conexion.prepareStatement("INSERT INTO grupo (id_grupo, grupo, id_docente) values(?, ?, ?)");
+            PreparedStatement insertard = conexion.prepareStatement("INSERT INTO docente (id_docente, nombre, apellido_pat, apellido_mat) values(?, ?, ?, ?)");
+            PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura (id_asignatura, asignatura) values(?, ?)");
+            PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio (id_laboratorio, laboratorio) values(?, ?)");
+            PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar (id_cicloEscolar, cicloEscolar) values(?, ?)");
+
+            // Inserciones para la tabla Docente
+            int idDocente = ContadorID.obtenerMaxId(conectar, "docente") + 1;
+            insertard.setInt(1, idDocente);
+            insertard.setString(2, txt_Nombre.getText().trim());
+            insertard.setString(3, txt_Apaterno.getText().trim());
+            insertard.setString(4, txt_Amaterno.getText().trim());
             insertard.executeUpdate();
+
+            int idGrupo = ContadorID.obtenerMaxId(conectar, "grupo") + 1;
+            insertarg.setInt(1, idGrupo);
+            insertarg.setString(2, combo_semestre.getSelectedItem().toString() + "C" + combo_turno.getSelectedItem().toString()
+                    + combo_ngrupo.getSelectedItem().toString() + combo_nmateria.getSelectedItem().toString());
+            insertarg.setInt(3, idDocente); // Asignar el ID de Docente al Grupo
             insertarg.executeUpdate();
+
+            int idAsignatura = ContadorID.obtenerMaxId(conectar, "asignatura") + 1;
+            insertara.setInt(1, idAsignatura);
+            insertara.setString(2, combo_asignatura.getSelectedItem().toString());
             insertara.executeUpdate();
+
+            int idLaboratorio = ContadorID.obtenerMaxId(conectar, "laboratorio") + 1;
+            insertarl.setInt(1, idLaboratorio);
+            insertarl.setString(2, combo_asignatura.getSelectedItem().toString());
             insertarl.executeUpdate();
+
+            int idCicloEscolar = ContadorID.obtenerMaxId(conectar, "cicloEscolar") + 1;
+            insertarc.setInt(1, idCicloEscolar);
+            insertarc.setString(2, combo_ciclo.getSelectedItem().toString());
             insertarc.executeUpdate();
-            
+
+            int idInfoGrupo = ContadorID.obtenerMaxId(conectar, "InfoGrupo") + 1;
+
+            // Inserciones para la tabla InfoGrupo
+            PreparedStatement insertarInfoGrupo = conexion.prepareStatement("INSERT INTO InfoGrupo (id_InfoGrupo, id_grupo, id_asignatura, id_laboratorio, id_cicloEscolar) values (?, ?, ?, ?, ?)");
+            insertarInfoGrupo.setInt(1, idInfoGrupo);
+            insertarInfoGrupo.setInt(2, idGrupo);
+            insertarInfoGrupo.setInt(3, idAsignatura);
+            insertarInfoGrupo.setInt(4, idLaboratorio);
+            insertarInfoGrupo.setInt(5, idCicloEscolar);
+            insertarInfoGrupo.executeUpdate();
+
+            // Confirmar las inserciones
+            conexion.commit();
             JOptionPane.showMessageDialog(null, "Datos Registrados");
-            
             conectar.cerrarConexion();
-            
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null,"Error: " + e);
+            JOptionPane.showMessageDialog(null, "Error: " + e);
         }
     }//GEN-LAST:event_jbtnEscanearActionPerformed
-    
+
 //Pantalla anterios
-    
     /**
      * @param args the command line arguments
      */

@@ -4,26 +4,23 @@
  */
 package test;
 
+import com.mysql.cj.xdevapi.*;
+import coneccion.*;
+import java.sql.*;
 import damain.TextPrompt;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-
-/**
- *
- * @author Gabriela
- */
 public class VerGrupos extends javax.swing.JFrame {
 
-    /**
-     * Creates new form VerGrupos
-     */
+    Conexion conectar = Conexion.getInstance();
+
     public VerGrupos() {
-        initComponents();    
+        initComponents();
         TextPrompt placeholder = new TextPrompt("Buscar grupo", jTextField1);
         this.setLocationRelativeTo(null);
-        objetos();
+        generarBotones();
         regresar();
     }
 
@@ -127,9 +124,8 @@ public class VerGrupos extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-      
-    public void objetos(){
+
+    /*public void objetos(){
         Font personalizar = new Font("Times New Roman", Font.BOLD, 14);
         JLabel etiqueta1 = new JLabel("6CV15-20241");
         JButton boton1= new JButton("VER");
@@ -156,14 +152,75 @@ public class VerGrupos extends javax.swing.JFrame {
         // Actualizar el panel para que se muestren las nuevas etiquetas
         jPanel2.validate();
         jPanel2.repaint();
+    }*/
+    public void generarBotones() {
+        try {
+            Connection conexion = conectar.conectar();
+            // Query to fetch distinct group names and cycle information from your database
+            String query = "SELECT Grupo.grupo, CicloEscolar.cicloEscolar "
+                    + "FROM Grupo "
+                    + "JOIN InfoGrupo ON Grupo.id_grupo = InfoGrupo.id_grupo "
+                    + "JOIN CicloEscolar ON InfoGrupo.id_cicloEscolar = CicloEscolar.id_cicloEscolar";
+            PreparedStatement preparedStatement = conexion.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Configurar la posición base para las etiquetas y botones
+            int y = 30;
+
+            // Iterar sobre los resultados de la consulta
+            while (resultSet.next()) {
+                // Obtener el nombre del grupo y el ciclo escolar
+                String nombreGrupo = resultSet.getString("grupo");
+                String cicloEscolar = resultSet.getString("cicloEscolar");
+
+                // Crear etiqueta y botón para cada grupo
+                JLabel etiqueta = new JLabel(nombreGrupo + "-" + cicloEscolar);
+                JButton boton = new JButton("VER");
+
+                // Configurar la fuente
+                Font personalizar = new Font("Times New Roman", Font.BOLD, 14);
+                etiqueta.setFont(personalizar);
+                boton.setFont(personalizar);
+
+                // Configurar la posición y el tamaño de las etiquetas y botones
+                etiqueta.setBounds(75, y, 150, 30);
+                boton.setBounds(250, y, 100, 30);
+
+                // Agregar ActionListener al botón
+                boton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        VGVer grupo = new VGVer();
+                        grupo.setValor(nombreGrupo);
+                        grupo.setVisible(true);
+                    }
+                });
+
+                // Agregar las etiquetas y botones al panel o contenedor
+                jPanel2.add(etiqueta);
+                jPanel2.add(boton);
+
+                // Actualizar la posición para el siguiente grupo
+                y += 50;
+            }
+
+            // Actualizar el panel para que se muestren las nuevas etiquetas y botones
+            jPanel2.validate();
+            jPanel2.repaint();
+
+            // Cerrar la conexión a la base de datos
+            conectar.cerrarConexion();
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e);
+        }
     }
-   
-    
-    public void regresar(){
+
+    public void regresar() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            addWindowListener(new WindowAdapter (){
-                public void windowAnterior(WindowEvent e){
+            addWindowListener(new WindowAdapter() {
+                public void windowAnterior(WindowEvent e) {
                     pantallaAnterior();
                 }
             });
@@ -171,19 +228,19 @@ public class VerGrupos extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
-    public void pantallaAnterior(){
+
+    public void pantallaAnterior() {
         Inicio vInicio = new Inicio();
         vInicio.setVisible(true);
     }
-    
+
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
-      
+
     }//GEN-LAST:event_jTextField1FocusLost
 
     private void jTextField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyTyped
@@ -224,7 +281,7 @@ public class VerGrupos extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            new VerGrupos().setVisible(true);  
+                new VerGrupos().setVisible(true);
             }
         });
     }

@@ -42,6 +42,7 @@ public class Inicio extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
+        jbtnParametros = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,19 +129,33 @@ public class Inicio extends javax.swing.JFrame {
             .addGap(0, 12, Short.MAX_VALUE)
         );
 
+        jbtnParametros.setBackground(java.awt.Color.gray);
+        jbtnParametros.setFont(new java.awt.Font("Times New Roman", 2, 14)); // NOI18N
+        jbtnParametros.setText("Parámetros");
+        jbtnParametros.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnParametrosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(139, 139, 139)
-                .addComponent(jbtnCrearGrupo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jbtnVerGrupo)
-                .addGap(144, 144, 144))
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(110, 110, 110)
+                        .addComponent(jbtnCrearGrupo)
+                        .addGap(229, 229, 229)
+                        .addComponent(jbtnVerGrupo))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(278, 278, 278)
+                        .addComponent(jbtnParametros)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,7 +170,9 @@ public class Inicio extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbtnCrearGrupo)
                     .addComponent(jbtnVerGrupo))
-                .addGap(46, 46, 46))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jbtnParametros)
+                .addGap(16, 16, 16))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -206,6 +223,12 @@ public class Inicio extends javax.swing.JFrame {
         vCrearGrupo.setVisible(true);
     }//GEN-LAST:event_jbtnCrearGrupoActionPerformed
 
+    private void jbtnParametrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnParametrosActionPerformed
+        // TODO add your handling code here:
+        Parametros vParametros = new Parametros();
+        vParametros.setVisible(true);
+    }//GEN-LAST:event_jbtnParametrosActionPerformed
+
     
     /**
      * @param args the command line arguments
@@ -251,6 +274,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JButton jbtnCrearGrupo;
+    private javax.swing.JButton jbtnParametros;
     private javax.swing.JButton jbtnVerGrupo;
     // End of variables declaration//GEN-END:variables
 }

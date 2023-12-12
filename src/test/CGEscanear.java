@@ -4,24 +4,28 @@
  */
 package test;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import coneccion.*;
+import damain.*;
+import java.sql.*;
+import java.awt.event.*;
+import java.io.IOException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-
-/**
- *
- * @author Gabriela
- */
 public class CGEscanear extends javax.swing.JFrame {
 
-    /**
-     * Creates new form CGEscanear
-     */
+    Conexion conectar = Conexion.getInstance();
+    int id_grupo;
+
     public CGEscanear() {
         initComponents();
         this.setLocationRelativeTo(null);
         regresar();
+        escanearYActualizarTabla();
     }
 
     /**
@@ -36,9 +40,9 @@ public class CGEscanear extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jbtnFinalizar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jtableAlumno = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,20 +71,17 @@ public class CGEscanear extends javax.swing.JFrame {
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
-        jButton1.setBackground(java.awt.Color.lightGray);
-        jButton1.setText("Finalizar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbtnFinalizar.setBackground(java.awt.Color.lightGray);
+        jbtnFinalizar.setText("Finalizar");
+        jbtnFinalizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbtnFinalizarActionPerformed(evt);
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jtableAlumno.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "BOLETA", "NOMBRE"
@@ -94,7 +95,7 @@ public class CGEscanear extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jtableAlumno);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -105,7 +106,7 @@ public class CGEscanear extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(282, 282, 282)
-                        .addComponent(jButton1))
+                        .addComponent(jbtnFinalizar))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(99, 99, 99)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -119,7 +120,7 @@ public class CGEscanear extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(jbtnFinalizar)
                 .addGap(25, 25, 25))
         );
 
@@ -141,11 +142,11 @@ public class CGEscanear extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void regresar(){
+    public void regresar() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            addWindowListener(new WindowAdapter (){
-                public void windowAnterior(WindowEvent e){
+            addWindowListener(new WindowAdapter() {
+                public void windowAnterior(WindowEvent e) {
                     pantallaAnterior();
                 }
             });
@@ -153,14 +154,84 @@ public class CGEscanear extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
-    public void pantallaAnterior(){
+
+    public void pantallaAnterior() {
         CrearGrupo vCGrupo = new CrearGrupo();
         vCGrupo.setVisible(true);
+        this.setVisible(false);
     }
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+
+    public void escanearYActualizarTabla() {
+        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
+        // Ingresa la URL de la página con la información de los alumnos
+        String urlC = "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591";
+        String urlE = "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a";
+        try {
+            // Conecta y obtén el HTML de la página
+            Document doc = Jsoup.connect(urlE).timeout(20000).get();
+
+            // Busca el div con el nombre del alumno
+            Element nombreDiv = doc.select("div.nombre").first();
+            String nombre = nombreDiv.text();
+
+            // Busca el div con la boleta del alumno
+            Element boletaDiv = doc.select("div.boleta").first();
+            String boleta = boletaDiv.text();
+            System.out.println(nombre);
+            System.out.println(boleta);
+
+            tableModel.addRow(new Object[]{boleta, nombre});
+            tableModel.fireTableDataChanged();
+            jtableAlumno.setModel(tableModel);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setIdGrupo(Integer idGrupo) {
+        id_grupo = idGrupo;
+    }
+
+    private void jbtnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFinalizarActionPerformed
+
+        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
+        this.setVisible(false);
+        try {
+            Connection conexion = conectar.conectar();
+            conexion.setAutoCommit(false);
+
+            PreparedStatement insertarAl = conexion.prepareStatement("INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)");
+            PreparedStatement insertarIA = conexion.prepareStatement("INSERT INTO InfoAlumno(id_InfoAlumno, id_alumno, id_grupo) VALUES (?, ?, ?)");
+
+            for (int fila = 0; fila < jtableAlumno.getRowCount(); fila++) {
+
+                int idAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
+                int idIAlumno = ContadorID.obtenerMaxId(conectar, "infoalumno") + 1;
+
+                String boleta = jtableAlumno.getValueAt(fila, 0).toString().trim();
+                String nombre = jtableAlumno.getValueAt(fila, 1).toString().trim();
+
+                insertarAl.setInt(1, idAlumno);
+                insertarAl.setString(2, nombre);
+                insertarAl.setString(3, boleta);
+                insertarAl.executeUpdate();
+
+                insertarIA.setInt(1, idIAlumno);
+                insertarIA.setInt(2, idAlumno);
+                insertarIA.setInt(3, id_grupo);
+                insertarIA.executeUpdate();
+
+            }
+            conexion.commit();
+            conectar.cerrarConexion();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e);
+        }
+        tableModel.setRowCount(0);
+        jtableAlumno.setModel(tableModel);
+        this.dispose();
+    }//GEN-LAST:event_jbtnFinalizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,11 +269,11 @@ public class CGEscanear extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JButton jbtnFinalizar;
+    private javax.swing.JTable jtableAlumno;
     // End of variables declaration//GEN-END:variables
 }

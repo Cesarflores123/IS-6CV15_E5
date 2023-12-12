@@ -5,6 +5,8 @@
 package test;
 
 import coneccion.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -20,7 +22,6 @@ public class VGVer extends javax.swing.JFrame {
     public VGVer() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
     }
 
     /**
@@ -209,6 +210,26 @@ public class VGVer extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error: " + e);
         }
     }
+    
+    public void regresar() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter() {
+                public void windowAnterior(WindowEvent e) {
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pantallaAnterior() {
+        VerGrupos vVGrupo = new VerGrupos();
+        vVGrupo.setVisible(true);
+        this.setVisible(false);
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         VGAsistencia asistencia = new VGAsistencia();

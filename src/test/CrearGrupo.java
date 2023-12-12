@@ -110,9 +110,9 @@ public class CrearGrupo extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Ciclo escolar:");
 
-        combo_laboratorio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "COMPUTACION 1", "COMPUTACION 2" }));
+        combo_laboratorio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "COMPUTACION 1", "COMPUTACION 2" }));
 
-        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ACTIVIDAD EXTRACURRICULAR", "FÍSICA CLÁSICA", "FUNDAMENTOS DEL ALGEBRA", "FUNDAMENTOS DE PROGRAMACIÓN", "QUÍMICA BÁSICA", "ÁLGEBRA LINEAL", "CÁLCULO VECTORIAL", "ELECTRICIDAD Y MAGNETISMO", " MATEMÁTICAS DISCRETAS", "PROGRAMACIÓN ORIENTADA A OBJETOS", "CIRCUITOS DE CA Y CD", "CIRCUITOS LÓGICOS I", "ESTRUCTURA DE DATOS", "LENGUAJES DE BAJO NIVEL", "ANÁLISIS NUMÉRICO", "CIRCUITOS LÓGICOS II", "ELECTRÓNICA ANALÓGICA", "TEORÍA DE AUTÓMATAS", "ANÁLISIS DE SEÑALES ANALÓGICAS", "ANÁLISIS DE ALGORITMOS", "COMPILADORES", "ORGANIZACIÓN DE COMPUTADORAS", "ARQUITECTURA DE COMPUTADORAS", "INGENIERÍA DE SOFTWARE", "MODULACIÓN DIGITAL", "SISTEMAS OPERATIVOS", "TEORÍA DE CONTROL ANALÓGICO", "BASES DE DATOS", "NUEVAS TECNOLOGÍAS EN LA TRANSFERENCIA", "DE LA INFORMACIÓN", "TEORÍA DE CONTROL DIGITAL", "TEORÍA DE LA INFORMACIÓN Y CODIFICACIÓN", "REDES DE COMPUTADORAS", "SISTEMAS DISTRIBUIDOS", " " }));
+        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "ACTIVIDAD EXTRACURRICULAR", "FUNDAMENTOS DE PROGRAMACIÓN", "PROGRAMACIÓN ORIENTADA A OBJETOS", "ESTRUCTURA DE DATOS", "LENGUAJES DE BAJO NIVEL", "INGENIERÍA DE SOFTWARE", " ", " " }));
 
         jLabel7.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -126,9 +126,9 @@ public class CrearGrupo extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Nombre(s)");
 
-        combo_ciclo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20241", "20242", "20251", "20252", "20261", "20262", "20271", "20272", "20281", "20282" }));
+        combo_ciclo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20241", "20242" }));
 
-        combo_semestre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" }));
+        combo_semestre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "X", "1", "2", "3", "4", "5", "6", "7", "8" }));
         combo_semestre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 combo_semestreActionPerformed(evt);
@@ -137,9 +137,9 @@ public class CrearGrupo extends javax.swing.JFrame {
 
         combo_turno.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "M", "V" }));
 
-        combo_ngrupo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "x" }));
+        combo_ngrupo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "X", "1", "2", "3", "4", "5" }));
 
-        combo_nmateria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6" }));
+        combo_nmateria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "X", "1", "2", "3", "4", "5", "6" }));
 
         jLabel10.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel10.setText("C");
@@ -294,6 +294,7 @@ public class CrearGrupo extends javax.swing.JFrame {
     public void pantallaAnterior() {
         Inicio vInicio = new Inicio();
         vInicio.setVisible(true);
+        this.setVisible(false);
     }
 
     private void combo_semestreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_semestreActionPerformed
@@ -304,7 +305,6 @@ public class CrearGrupo extends javax.swing.JFrame {
         // TODO add your handling code here:
         CGEscanear escanear = new CGEscanear();
         escanear.setVisible(true);
-
         try {
             Connection conexion = conectar.conectar();
 
@@ -349,7 +349,6 @@ public class CrearGrupo extends javax.swing.JFrame {
 
             int idInfoGrupo = ContadorID.obtenerMaxId(conectar, "InfoGrupo") + 1;
 
-            // Inserciones para la tabla InfoGrupo
             PreparedStatement insertarInfoGrupo = conexion.prepareStatement("INSERT INTO InfoGrupo (id_InfoGrupo, id_grupo, id_asignatura, id_laboratorio, id_cicloEscolar) values (?, ?, ?, ?, ?)");
             insertarInfoGrupo.setInt(1, idInfoGrupo);
             insertarInfoGrupo.setInt(2, idGrupo);
@@ -358,7 +357,7 @@ public class CrearGrupo extends javax.swing.JFrame {
             insertarInfoGrupo.setInt(5, idCicloEscolar);
             insertarInfoGrupo.executeUpdate();
 
-            // Confirmar las inserciones
+            escanear.setIdGrupo(idGrupo);
             conexion.commit();
             JOptionPane.showMessageDialog(null, "Datos Registrados");
             conectar.cerrarConexion();
@@ -366,6 +365,7 @@ public class CrearGrupo extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);
         }
+        this.dispose();
     }//GEN-LAST:event_jbtnEscanearActionPerformed
 
 //Pantalla anterios

@@ -5,7 +5,7 @@
 package test;
 
 import coneccion.*;
-import damain.ContadorID;
+import damain.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.sql.*;
@@ -16,17 +16,14 @@ import java.sql.*;
  */
 public class CrearGrupo extends javax.swing.JFrame {
 
-    /**
-     * Creates new form CrearGrupo
-     */
     Conexion conectar = Conexion.getInstance();
 
     public CrearGrupo() {
-
         initComponents();
-
         this.setLocationRelativeTo(null);
         regresar();
+        cargarAsignaturas();
+        cargarCiclos();
     }
 
     /**
@@ -112,7 +109,7 @@ public class CrearGrupo extends javax.swing.JFrame {
 
         combo_laboratorio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "COMPUTACION 1", "COMPUTACION 2" }));
 
-        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "ACTIVIDAD EXTRACURRICULAR", "FUNDAMENTOS DE PROGRAMACIÓN", "PROGRAMACIÓN ORIENTADA A OBJETOS", "ESTRUCTURA DE DATOS", "LENGUAJES DE BAJO NIVEL", "INGENIERÍA DE SOFTWARE", " ", " " }));
+        combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "..." }));
 
         jLabel7.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -126,14 +123,7 @@ public class CrearGrupo extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Nombre(s)");
 
-        combo_ciclo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "20241", "20242" }));
-
         combo_semestre.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "X", "1", "2", "3", "4", "5", "6", "7", "8" }));
-        combo_semestre.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                combo_semestreActionPerformed(evt);
-            }
-        });
 
         combo_turno.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "M", "V" }));
 
@@ -297,9 +287,43 @@ public class CrearGrupo extends javax.swing.JFrame {
         this.setVisible(false);
     }
 
-    private void combo_semestreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_semestreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_combo_semestreActionPerformed
+    private void cargarAsignaturas() {
+        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) combo_asignatura.getModel();
+        try {
+            Connection conexion = conectar.conectar();
+            conexion.setAutoCommit(false);
+            String query = "SELECT asignatura FROM asignatura";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String nombreAsignatura = resultSet.getString("asignatura");
+                        model.addElement(nombreAsignatura);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e);
+        }
+    }
+
+    private void cargarCiclos() {
+        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) combo_ciclo.getModel();
+        try {
+            Connection conexion = conectar.conectar();
+            conexion.setAutoCommit(false);
+            String query = "SELECT cicloescolar FROM cicloescolar";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String cicloEscolar = resultSet.getString("cicloescolar");
+                        model.addElement(cicloEscolar);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e);
+        }
+    }
 
     private void jbtnEscanearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEscanearActionPerformed
         // TODO add your handling code here:
@@ -307,15 +331,10 @@ public class CrearGrupo extends javax.swing.JFrame {
         escanear.setVisible(true);
         try {
             Connection conexion = conectar.conectar();
-
             conexion.setAutoCommit(false);
-
-            // Preparar las consultas SQL con autoincrement 'Statement.RETURN_GENERATED_KEYS'
             PreparedStatement insertarg = conexion.prepareStatement("INSERT INTO grupo (id_grupo, grupo, id_docente) values(?, ?, ?)");
             PreparedStatement insertard = conexion.prepareStatement("INSERT INTO docente (id_docente, nombre, apellido_pat, apellido_mat) values(?, ?, ?, ?)");
-            PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura (id_asignatura, asignatura) values(?, ?)");
             PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio (id_laboratorio, laboratorio) values(?, ?)");
-            PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar (id_cicloEscolar, cicloEscolar) values(?, ?)");
 
             // Inserciones para la tabla Docente
             int idDocente = ContadorID.obtenerMaxId(conectar, "docente") + 1;
@@ -332,24 +351,19 @@ public class CrearGrupo extends javax.swing.JFrame {
             insertarg.setInt(3, idDocente); // Asignar el ID de Docente al Grupo
             insertarg.executeUpdate();
 
-            int idAsignatura = ContadorID.obtenerMaxId(conectar, "asignatura") + 1;
-            insertara.setInt(1, idAsignatura);
-            insertara.setString(2, combo_asignatura.getSelectedItem().toString());
-            insertara.executeUpdate();
-
             int idLaboratorio = ContadorID.obtenerMaxId(conectar, "laboratorio") + 1;
             insertarl.setInt(1, idLaboratorio);
             insertarl.setString(2, combo_asignatura.getSelectedItem().toString());
             insertarl.executeUpdate();
 
-            int idCicloEscolar = ContadorID.obtenerMaxId(conectar, "cicloEscolar") + 1;
-            insertarc.setInt(1, idCicloEscolar);
-            insertarc.setString(2, combo_ciclo.getSelectedItem().toString());
-            insertarc.executeUpdate();
+            String nombreAsignatura = combo_asignatura.getSelectedItem().toString();
+            int idAsignatura = ObtenerID.obtenerIDA(conectar, nombreAsignatura);
+            
+            String cicloEscolar = combo_ciclo.getSelectedItem().toString();
+            int idCicloEscolar = ObtenerID.obtenerIDC(conectar, cicloEscolar);
 
             int idInfoGrupo = ContadorID.obtenerMaxId(conectar, "InfoGrupo") + 1;
-
-            PreparedStatement insertarInfoGrupo = conexion.prepareStatement("INSERT INTO InfoGrupo (id_InfoGrupo, id_grupo, id_asignatura, id_laboratorio, id_cicloEscolar) values (?, ?, ?, ?, ?)");
+            PreparedStatement insertarInfoGrupo = conexion.prepareStatement("INSERT INTO InfoGrupo (id_InfoGrupo, id_grupo, id_asignatura, id_laboratorio, id_cicloescolar) values (?, ?, ?, ?, ?)");
             insertarInfoGrupo.setInt(1, idInfoGrupo);
             insertarInfoGrupo.setInt(2, idGrupo);
             insertarInfoGrupo.setInt(3, idAsignatura);

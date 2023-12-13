@@ -309,16 +309,8 @@
         <Component class="javax.swing.JComboBox" name="combo_asignatura">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="9">
+              <StringArray count="1">
                 <StringItem index="0" value="..."/>
-                <StringItem index="1" value="ACTIVIDAD EXTRACURRICULAR"/>
-                <StringItem index="2" value="FUNDAMENTOS DE PROGRAMACI&#xd3;N"/>
-                <StringItem index="3" value="PROGRAMACI&#xd3;N ORIENTADA A OBJETOS"/>
-                <StringItem index="4" value="ESTRUCTURA DE DATOS"/>
-                <StringItem index="5" value="LENGUAJES DE BAJO NIVEL"/>
-                <StringItem index="6" value="INGENIER&#xcd;A DE SOFTWARE"/>
-                <StringItem index="7" value=" "/>
-                <StringItem index="8" value=" "/>
               </StringArray>
             </Property>
           </Properties>
@@ -362,10 +354,7 @@
         <Component class="javax.swing.JComboBox" name="combo_ciclo">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
-                <StringItem index="0" value="20241"/>
-                <StringItem index="1" value="20242"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <AuxValues>
@@ -388,9 +377,6 @@
               </StringArray>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="combo_semestreActionPerformed"/>
-          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>

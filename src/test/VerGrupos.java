@@ -107,35 +107,6 @@ public class VerGrupos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    /*public void objetos(){
-        Font personalizar = new Font("Times New Roman", Font.BOLD, 14);
-        JLabel etiqueta1 = new JLabel("6CV15-20241");
-        JButton boton1= new JButton("VER");
-        etiqueta1.setFont(personalizar);
-        boton1.setFont(personalizar);
-        
-        // Configurar la posición y el tamaño de las etiquetas (x, y, ancho, alto)
-        etiqueta1.setBounds(75, 30, 100, 30);
-        boton1.setBounds(250, 30, 100, 30);
-        
-         boton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VGVer grupo = new VGVer();
-                grupo.setValor("6CV15");
-                grupo.setVisible(true);              
-            }
-        });
-
-        // Agregar las etiquetas al panel o contenedor
-        jPanel2.add(etiqueta1);
-        jPanel2.add(boton1);
-
-        // Actualizar el panel para que se muestren las nuevas etiquetas
-        jPanel2.validate();
-        jPanel2.repaint();
-    }*/
     public void generarBotones() {
         try {
             Connection conexion = conectar.conectar();
@@ -165,7 +136,7 @@ public class VerGrupos extends javax.swing.JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         VGVer grupo = new VGVer();
-                        grupo.setValor(nombreGrupo);
+                        grupo.setValor(nombreGrupo, cicloEscolar);
                         grupo.setVisible(true);
                     }
                 });
@@ -180,7 +151,6 @@ public class VerGrupos extends javax.swing.JFrame {
             jpanelGrupos.repaint();
 
             conectar.cerrarConexion();
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);
         }

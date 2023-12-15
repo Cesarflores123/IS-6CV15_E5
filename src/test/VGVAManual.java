@@ -1,21 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package test;
 
-/**
- *
- * @author Gabriela
- */
+import coneccion.*;
+import damain.ContadorID;
+import java.sql.*;
+import javax.swing.JOptionPane;
+
 public class VGVAManual extends javax.swing.JFrame {
 
-    /**
-     * Creates new form VGVAManual
-     */
+    static int idd = 0;
+
+    Conexion conectar = Conexion.getInstance();
+
     public VGVAManual() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setTitle("ASISTENCIA MANUAL");
     }
 
     /**
@@ -33,10 +32,10 @@ public class VGVAManual extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jtxtBoleta = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        jtxtNombre = new javax.swing.JTextField();
+        jbtnAgregar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,18 +75,18 @@ public class VGVAManual extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Nombre(s)         Apellido paterno       Apellido materno");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+        jtxtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jtxtNombreKeyTyped(evt);
             }
         });
 
-        jButton1.setBackground(java.awt.Color.lightGray);
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jButton1.setText("Agregar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbtnAgregar.setBackground(java.awt.Color.lightGray);
+        jbtnAgregar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jbtnAgregar.setText("Agregar");
+        jbtnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbtnAgregarActionPerformed(evt);
             }
         });
 
@@ -105,12 +104,12 @@ public class VGVAManual extends javax.swing.JFrame {
                             .addComponent(jLabel3))
                         .addGap(36, 36, 36)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField2)))
+                            .addComponent(jtxtNombre)
+                            .addComponent(jtxtBoleta)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(223, 223, 223)
-                        .addComponent(jButton1)))
+                        .addComponent(jbtnAgregar)))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -118,18 +117,18 @@ public class VGVAManual extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtxtBoleta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(39, 39, 39)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGap(27, 27, 27)
+                .addComponent(jbtnAgregar)
                 .addGap(37, 37, 37))
         );
 
@@ -160,13 +159,195 @@ public class VGVAManual extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    public void setValor(String grupo) {
+        idd = -1;
+        try {
+            Connection conexion = conectar.conectar();
+            String query = "SELECT id_grupo FROM Grupo WHERE grupo = ?";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                preparedStatement.setString(1, grupo);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        idd = resultSet.getInt("id_grupo");
+                    }
+                }
+            }
+            conectar.cerrarConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    public int obtenerIdAlumnoPorBoleta(String boleta) {
+        int idAlumno = -1;
+        try {
+            Connection conexion = conectar.conectar();
+            String query = "SELECT id_alumno FROM Alumno WHERE boleta = ?";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                preparedStatement.setString(1, boleta);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        idAlumno = resultSet.getInt("id_alumno");
+                    }
+                }
+            }
+            conectar.cerrarConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return idAlumno;
+    }
+
+    private void insertarAsistencia(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+        String consultaAsistencia = "INSERT INTO Asistencia (id_asistencia, id_InfoAlumno, asistencia, fecha) VALUES (?, ?, 'x', CURRENT_DATE)";
+        try (PreparedStatement pstmtAsistencia = conexion.prepareStatement(consultaAsistencia)) {
+            pstmtAsistencia.setInt(1, id_asistencia);
+            pstmtAsistencia.setInt(2, id_InfoAlumno);
+            pstmtAsistencia.executeUpdate();
+        }
+    }
+
+    private void actualizarIdAsistenciaEnInfoAlumno(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+        String consultaActualizarIdAsistencia = "UPDATE InfoAlumno SET id_asistencia = ? WHERE id_infoAlumno = ?";
+        try (PreparedStatement pstmtActualizarIdAsistencia = conexion.prepareStatement(consultaActualizarIdAsistencia)) {
+            pstmtActualizarIdAsistencia.setInt(1, id_asistencia);
+            pstmtActualizarIdAsistencia.setInt(2, id_InfoAlumno);
+            pstmtActualizarIdAsistencia.executeUpdate();
+        }
+    }
+
+    private void agregarAlumnoAGrupo(Connection conexion, int id_boleta) throws SQLException {
+        //int opcion = JOptionPane.showConfirmDialog(null, "El alumno no pertenece al grupo especificado. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
+        String nombreAlumno = jtxtNombre.getText();
+        //if (opcion == JOptionPane.YES_OPTION) {
+            int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+            int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+            insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+            String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+            try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+                pstmtInsertar.setInt(1, id_InfoAlumno);
+                pstmtInsertar.setInt(2, id_boleta);
+                pstmtInsertar.setInt(3, id_asistencia);
+                pstmtInsertar.setInt(4, idd);
+                pstmtInsertar.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        //}
+    }
+
+    private void agregarNuevoAlumno(Connection conexion, String boleta) throws SQLException {
+        // Verificar si el alumno ya existe en la tabla Alumno
+        if (!existeAlumno(conexion, boleta)) {
+            int opcion = JOptionPane.showConfirmDialog(null, "El alumno no existe. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                String nombreAlumno = jtxtNombre.getText();
+                try {
+                    String consultaInsertarAlumno = "INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)";
+                    try (PreparedStatement pstmtInsertarAlumno = conexion.prepareStatement(consultaInsertarAlumno)) {
+                        int nuevoIdAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
+                        pstmtInsertarAlumno.setInt(1, nuevoIdAlumno);
+                        pstmtInsertarAlumno.setString(2, nombreAlumno);
+                        pstmtInsertarAlumno.setString(3, boleta);
+                        pstmtInsertarAlumno.executeUpdate();
+
+                        int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                        int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+                        insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+                        String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+                        try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+                            pstmtInsertar.setInt(1, id_InfoAlumno);
+                            pstmtInsertar.setInt(2, nuevoIdAlumno);
+                            pstmtInsertar.setInt(3, id_asistencia);
+                            pstmtInsertar.setInt(4, idd);
+                            pstmtInsertar.executeUpdate();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                jtxtBoleta.setText(boleta);
+            }
+        } else {
+            // El alumno ya existe, manejar según sea necesario
+            JOptionPane.showMessageDialog(null, "El alumno ya existe en la base de datos.");
+            int id_boleta = obtenerIdAlumnoPorBoleta(boleta);
+            agregarAlumnoAGrupo(conexion, id_boleta);
+        }
+        jtxtBoleta.setText("");
+        jtxtNombre.setText("");
+    }
+
+// Función para verificar si el alumno ya existe en la tabla Alumno
+    private boolean existeAlumno(Connection conexion, String boleta) {
+        String consultaExisteAlumno = "SELECT COUNT(*) FROM Alumno WHERE boleta = ?";
+        try (PreparedStatement pstmtExisteAlumno = conexion.prepareStatement(consultaExisteAlumno)) {
+            pstmtExisteAlumno.setString(1, boleta);
+            try (ResultSet resultSet = pstmtExisteAlumno.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void jbtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnAgregarActionPerformed
+        String boleta = jtxtBoleta.getText();
+        int id_boleta = obtenerIdAlumnoPorBoleta(boleta);
+        int id_grupo = idd;
+
+        try (Connection conexion = conectar.conectar()) {
+            String consultaInfoAlumno = "SELECT id_infoAlumno, id_alumno, id_grupo FROM InfoAlumno WHERE id_alumno = ?";
+
+            try (PreparedStatement pstmtInfoAlumno = conexion.prepareStatement(consultaInfoAlumno)) {
+                pstmtInfoAlumno.setInt(1, id_boleta);
+
+                try (ResultSet resultadoInfoAlumno = pstmtInfoAlumno.executeQuery()) {
+                    if (resultadoInfoAlumno.next()) {
+                        int id_alumno = resultadoInfoAlumno.getInt("id_alumno");
+                        int id_grupo_infoAlumno = resultadoInfoAlumno.getInt("id_grupo");
+
+                        if (id_grupo_infoAlumno == id_grupo) {
+                            int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                            int id_InfoAlumno = resultadoInfoAlumno.getInt("id_infoAlumno");
+
+                            insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+                            actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, id_InfoAlumno);
+
+                        } else {
+                            int opcion = JOptionPane.showConfirmDialog(null, "El alumno no pertenece al grupo especificado. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
+                            if (opcion == JOptionPane.YES_OPTION) {
+                                agregarAlumnoAGrupo(conexion, id_boleta);
+                            }    
+                        }
+                    } else {
+                        agregarNuevoAlumno(conexion, boleta);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jbtnAgregarActionPerformed
+
+    private void jtxtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtxtNombreKeyTyped
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        char caracter = evt.getKeyChar();
+        if (Character.isLowerCase(caracter)) {
+            evt.setKeyChar(Character.toUpperCase(caracter));
+        }
+    }//GEN-LAST:event_jtxtNombreKeyTyped
 
     /**
      * @param args the command line arguments
@@ -204,7 +385,6 @@ public class VGVAManual extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -212,7 +392,8 @@ public class VGVAManual extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JButton jbtnAgregar;
+    private javax.swing.JTextField jtxtBoleta;
+    private javax.swing.JTextField jtxtNombre;
     // End of variables declaration//GEN-END:variables
 }

@@ -11,12 +11,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 public class Parametros extends javax.swing.JFrame {
 
     Conexion conectar = Conexion.getInstance();
-    private CrearGrupo crearGrupo;
 
     public Parametros() {
         initComponents();

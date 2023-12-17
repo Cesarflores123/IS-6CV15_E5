@@ -2,7 +2,10 @@ package test;
 
 import coneccion.*;
 import damain.ContadorID;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.*;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class VGVAManual extends javax.swing.JFrame {
@@ -15,6 +18,7 @@ public class VGVAManual extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("ASISTENCIA MANUAL");
+        regresar();
     }
 
     /**
@@ -159,6 +163,26 @@ public class VGVAManual extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void regresar() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pantallaAnterior() {
+        this.dispose();
+        VGAsistencia vEAsistencia = new VGAsistencia();
+        vEAsistencia.setVisible(true);
+    }
+
     public void setValor(String grupo) {
         idd = -1;
         try {
@@ -217,30 +241,26 @@ public class VGVAManual extends javax.swing.JFrame {
     }
 
     private void agregarAlumnoAGrupo(Connection conexion, int id_boleta) throws SQLException {
-        //int opcion = JOptionPane.showConfirmDialog(null, "El alumno no pertenece al grupo especificado. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
         String nombreAlumno = jtxtNombre.getText();
-        //if (opcion == JOptionPane.YES_OPTION) {
-            int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
-            int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
-            insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
-
-            String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
-            try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
-                pstmtInsertar.setInt(1, id_InfoAlumno);
-                pstmtInsertar.setInt(2, id_boleta);
-                pstmtInsertar.setInt(3, id_asistencia);
-                pstmtInsertar.setInt(4, idd);
-                pstmtInsertar.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+        int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+        insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+        String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+        try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+            pstmtInsertar.setInt(1, id_InfoAlumno);
+            pstmtInsertar.setInt(2, id_boleta);
+            pstmtInsertar.setInt(3, id_asistencia);
+            pstmtInsertar.setInt(4, idd);
+            pstmtInsertar.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         //}
     }
 
     private void agregarNuevoAlumno(Connection conexion, String boleta) throws SQLException {
-        // Verificar si el alumno ya existe en la tabla Alumno
         if (!existeAlumno(conexion, boleta)) {
-            int opcion = JOptionPane.showConfirmDialog(null, "El alumno no existe. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
+            int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.YES_OPTION) {
                 String nombreAlumno = jtxtNombre.getText();
                 try {
@@ -275,7 +295,6 @@ public class VGVAManual extends javax.swing.JFrame {
                 jtxtBoleta.setText(boleta);
             }
         } else {
-            // El alumno ya existe, manejar según sea necesario
             JOptionPane.showMessageDialog(null, "El alumno ya existe en la base de datos.");
             int id_boleta = obtenerIdAlumnoPorBoleta(boleta);
             agregarAlumnoAGrupo(conexion, id_boleta);
@@ -284,7 +303,6 @@ public class VGVAManual extends javax.swing.JFrame {
         jtxtNombre.setText("");
     }
 
-// Función para verificar si el alumno ya existe en la tabla Alumno
     private boolean existeAlumno(Connection conexion, String boleta) {
         String consultaExisteAlumno = "SELECT COUNT(*) FROM Alumno WHERE boleta = ?";
         try (PreparedStatement pstmtExisteAlumno = conexion.prepareStatement(consultaExisteAlumno)) {
@@ -326,10 +344,10 @@ public class VGVAManual extends javax.swing.JFrame {
                             actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, id_InfoAlumno);
 
                         } else {
-                            int opcion = JOptionPane.showConfirmDialog(null, "El alumno no pertenece al grupo especificado. ¿Deseas agregar este alumno al grupo?\nIngresa el nombre del alumno:", "Confirmación", JOptionPane.YES_NO_OPTION);
+                            int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
                             if (opcion == JOptionPane.YES_OPTION) {
                                 agregarAlumnoAGrupo(conexion, id_boleta);
-                            }    
+                            }
                         }
                     } else {
                         agregarNuevoAlumno(conexion, boleta);

@@ -21,6 +21,7 @@ public class CrearGrupo extends javax.swing.JFrame {
     public CrearGrupo() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setTitle("CREAR GRUPO");
         regresar();
         cargarAsignaturas();
         cargarCiclos();
@@ -108,6 +109,24 @@ public class CrearGrupo extends javax.swing.JFrame {
         jLabel6.setText("Ciclo escolar:");
 
         combo_laboratorio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "COMPUTACION 1", "COMPUTACION 2" }));
+
+        txt_Apaterno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txt_ApaternoKeyTyped(evt);
+            }
+        });
+
+        txt_Amaterno.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txt_AmaternoKeyTyped(evt);
+            }
+        });
+
+        txt_Nombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txt_NombreKeyTyped(evt);
+            }
+        });
 
         combo_asignatura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "..." }));
 
@@ -267,7 +286,6 @@ public class CrearGrupo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Pantalla anterios
     public void regresar() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -326,7 +344,6 @@ public class CrearGrupo extends javax.swing.JFrame {
     }
 
     private void jbtnEscanearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEscanearActionPerformed
-        // TODO add your handling code here:
         CGEscanear escanear = new CGEscanear();
         escanear.setVisible(true);
         try {
@@ -336,7 +353,6 @@ public class CrearGrupo extends javax.swing.JFrame {
             PreparedStatement insertard = conexion.prepareStatement("INSERT INTO docente (id_docente, nombre, apellido_pat, apellido_mat) values(?, ?, ?, ?)");
             PreparedStatement insertarl = conexion.prepareStatement("INSERT INTO laboratorio (id_laboratorio, laboratorio) values(?, ?)");
 
-            // Inserciones para la tabla Docente
             int idDocente = ContadorID.obtenerMaxId(conectar, "docente") + 1;
             insertard.setInt(1, idDocente);
             insertard.setString(2, txt_Nombre.getText().trim());
@@ -348,12 +364,12 @@ public class CrearGrupo extends javax.swing.JFrame {
             insertarg.setInt(1, idGrupo);
             insertarg.setString(2, combo_semestre.getSelectedItem().toString() + "C" + combo_turno.getSelectedItem().toString()
                     + combo_ngrupo.getSelectedItem().toString() + combo_nmateria.getSelectedItem().toString());
-            insertarg.setInt(3, idDocente); // Asignar el ID de Docente al Grupo
+            insertarg.setInt(3, idDocente);
             insertarg.executeUpdate();
 
             int idLaboratorio = ContadorID.obtenerMaxId(conectar, "laboratorio") + 1;
             insertarl.setInt(1, idLaboratorio);
-            insertarl.setString(2, combo_asignatura.getSelectedItem().toString());
+            insertarl.setString(2, combo_laboratorio.getSelectedItem().toString());
             insertarl.executeUpdate();
 
             String nombreAsignatura = combo_asignatura.getSelectedItem().toString();
@@ -381,6 +397,30 @@ public class CrearGrupo extends javax.swing.JFrame {
         }
         this.dispose();
     }//GEN-LAST:event_jbtnEscanearActionPerformed
+
+    private void txt_ApaternoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_ApaternoKeyTyped
+        // TODO add your handling code here:
+        char dato = evt.getKeyChar();
+        if(Character.isLowerCase(dato)){
+            evt.setKeyChar(Character.toUpperCase(dato));
+        }
+    }//GEN-LAST:event_txt_ApaternoKeyTyped
+
+    private void txt_AmaternoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_AmaternoKeyTyped
+        // TODO add your handling code here:
+        char dato = evt.getKeyChar();
+        if(Character.isLowerCase(dato)){
+            evt.setKeyChar(Character.toUpperCase(dato));
+        }
+    }//GEN-LAST:event_txt_AmaternoKeyTyped
+
+    private void txt_NombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_NombreKeyTyped
+        // TODO add your handling code here:
+        char dato = evt.getKeyChar();
+        if(Character.isLowerCase(dato)){
+            evt.setKeyChar(Character.toUpperCase(dato));
+        }
+    }//GEN-LAST:event_txt_NombreKeyTyped
 
 //Pantalla anterios
     /**

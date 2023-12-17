@@ -24,6 +24,7 @@ public class CGEscanear extends javax.swing.JFrame {
     public CGEscanear() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setTitle("AGREGAR ALUMNOS");
         regresar();
         escanearYActualizarTabla();
     }
@@ -158,12 +159,11 @@ public class CGEscanear extends javax.swing.JFrame {
     public void pantallaAnterior() {
         CrearGrupo vCGrupo = new CrearGrupo();
         vCGrupo.setVisible(true);
-        this.setVisible(false);
+        this.dispose();
     }
 
     public void escanearYActualizarTabla() {
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
-        // Ingresa la URL de la página con la información de los alumnos
         String urlC = "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591";
         String urlE = "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a";
         try {
@@ -194,43 +194,52 @@ public class CGEscanear extends javax.swing.JFrame {
     }
 
     private void jbtnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFinalizarActionPerformed
+        int opcion = JOptionPane.showConfirmDialog(null, "¿Desea concluir el registro de alumnos?", "Confirmacion", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) {
+            DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
+            this.setVisible(false);
+            try {
+                Connection conexion = conectar.conectar();
+                conexion.setAutoCommit(false);
+                PreparedStatement consultarBoleta = conexion.prepareStatement("SELECT id_alumno FROM Alumno WHERE boleta = ?");
+                PreparedStatement insertarAl = conexion.prepareStatement("INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)");
+                PreparedStatement insertarIA = conexion.prepareStatement("INSERT INTO InfoAlumno(id_InfoAlumno, id_alumno, id_grupo) VALUES (?, ?, ?)");
+                for (int fila = 0; fila < jtableAlumno.getRowCount(); fila++) {
+                    String boleta = jtableAlumno.getValueAt(fila, 0).toString().trim();
+                    String nombre = jtableAlumno.getValueAt(fila, 1).toString().trim();
+                    int idAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
+                    int idIAlumno = ContadorID.obtenerMaxId(conectar, "infoalumno") + 1;
+                    // Consultar si la boleta ya existe
+                    consultarBoleta.setString(1, boleta);
+                    ResultSet resultSet = consultarBoleta.executeQuery();
+                    if (resultSet.next()) {
+                        int idAlumnoExistente = resultSet.getInt("id_alumno");
+                        insertarIA.setInt(1, idIAlumno);
+                        insertarIA.setInt(2, idAlumnoExistente);
+                        insertarIA.setInt(3, id_grupo);
+                    } else {
+                        insertarAl.setInt(1, idAlumno);
+                        insertarAl.setString(2, nombre);
+                        insertarAl.setString(3, boleta);
+                        insertarAl.executeUpdate();
 
-        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
-        this.setVisible(false);
-        try {
-            Connection conexion = conectar.conectar();
-            conexion.setAutoCommit(false);
+                        insertarIA.setInt(1, idIAlumno);
+                        insertarIA.setInt(2, idAlumno);
+                        insertarIA.setInt(3, id_grupo);
+                        insertarIA.executeUpdate();
+                    }
 
-            PreparedStatement insertarAl = conexion.prepareStatement("INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)");
-            PreparedStatement insertarIA = conexion.prepareStatement("INSERT INTO InfoAlumno(id_InfoAlumno, id_alumno, id_grupo) VALUES (?, ?, ?)");
-
-            for (int fila = 0; fila < jtableAlumno.getRowCount(); fila++) {
-
-                int idAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
-                int idIAlumno = ContadorID.obtenerMaxId(conectar, "infoalumno") + 1;
-
-                String boleta = jtableAlumno.getValueAt(fila, 0).toString().trim();
-                String nombre = jtableAlumno.getValueAt(fila, 1).toString().trim();
-
-                insertarAl.setInt(1, idAlumno);
-                insertarAl.setString(2, nombre);
-                insertarAl.setString(3, boleta);
-                insertarAl.executeUpdate();
-
-                insertarIA.setInt(1, idIAlumno);
-                insertarIA.setInt(2, idAlumno);
-                insertarIA.setInt(3, id_grupo);
-                insertarIA.executeUpdate();
-
+                }
+                conexion.commit();
+                conectar.cerrarConexion();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error: " + e);
             }
-            conexion.commit();
-            conectar.cerrarConexion();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e);
+            tableModel.setRowCount(0);
+            jtableAlumno.setModel(tableModel);
+            this.dispose();
         }
-        tableModel.setRowCount(0);
-        jtableAlumno.setModel(tableModel);
-        this.dispose();
+
     }//GEN-LAST:event_jbtnFinalizarActionPerformed
 
     /**

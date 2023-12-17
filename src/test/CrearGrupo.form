@@ -301,10 +301,19 @@
           </AuxValues>
         </Component>
         <Component class="javax.swing.JTextField" name="txt_Apaterno">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_ApaternoKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txt_Amaterno">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_AmaternoKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txt_Nombre">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txt_NombreKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="combo_asignatura">
           <Properties>

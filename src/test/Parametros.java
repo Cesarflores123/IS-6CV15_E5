@@ -18,6 +18,7 @@ public class Parametros extends javax.swing.JFrame {
 
     public Parametros() {
         initComponents();
+        this.setTitle("PARAMETROS");
         this.setLocationRelativeTo(null);
         regresar();
     }

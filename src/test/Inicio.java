@@ -23,7 +23,7 @@ public class Inicio extends javax.swing.JFrame {
         initComponents();
         Conexion conexion = new Conexion();
         conexion.conectar();
-        
+        this.setTitle("Laboratorio");
         this.setLocationRelativeTo(null);
         cerrar();
      
@@ -189,7 +189,6 @@ public class Inicio extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //metodo confirmar cierre Jframe - Inicio
     public void cerrar(){
         try{
             this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

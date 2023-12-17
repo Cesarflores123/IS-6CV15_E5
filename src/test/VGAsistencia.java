@@ -4,6 +4,10 @@
  */
 package test;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Cesar
@@ -13,6 +17,8 @@ public class VGAsistencia extends javax.swing.JFrame {
     public VGAsistencia() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.setTitle("ESCANEAR");
+        regresar();
     }
 
     /**
@@ -115,6 +121,26 @@ public class VGAsistencia extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void regresar() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            addWindowListener(new WindowAdapter(){
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    pantallaAnterior();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pantallaAnterior() {
+        this.dispose();
+        VGVer vVer = new VGVer();
+        vVer.setVisible(true);
+    }
+    
     private void jbtnManualAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnManualAActionPerformed
         // TODO add your handling code here:
         VGVAManual manual = new VGVAManual();

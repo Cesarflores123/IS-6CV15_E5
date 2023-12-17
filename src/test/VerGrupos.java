@@ -4,22 +4,23 @@
  */
 package test;
 
-import com.mysql.cj.xdevapi.*;
 import coneccion.*;
 import java.sql.*;
 import damain.TextPrompt;
 import java.awt.*;
-import static java.awt.Color.white;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class VerGrupos extends javax.swing.JFrame {
 
     Conexion conectar = Conexion.getInstance();
     private JPanel panelGrupos;
+    public ArrayList<Component> componentes = new ArrayList<>();
+
     public VerGrupos() {
         initComponents();
-        TextPrompt placeholder = new TextPrompt("Buscar grupo", jTextField1);
+        TextPrompt placeholder = new TextPrompt("Buscar grupo ej. 1CV11-20241", jtxtBuscador);
         this.setLocationRelativeTo(null);
         this.setTitle("VER GRUPOS");
         generarBotones();
@@ -31,8 +32,8 @@ public class VerGrupos extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        jtxtBuscador = new javax.swing.JTextField();
+        jbtnBuscador = new javax.swing.JButton();
         jScrollPane = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -40,14 +41,14 @@ public class VerGrupos extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(108, 23, 43));
         jPanel1.setPreferredSize(new java.awt.Dimension(655, 425));
 
-        jTextField1.setToolTipText("");
-        jTextField1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                jTextField1FocusGained(evt);
+        jtxtBuscador.setToolTipText("");
+
+        jbtnBuscador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/buscar.png"))); // NOI18N
+        jbtnBuscador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnBuscadorActionPerformed(evt);
             }
         });
-
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/buscar.png"))); // NOI18N
 
         jScrollPane.setBackground(new java.awt.Color(108, 23, 43));
 
@@ -59,9 +60,9 @@ public class VerGrupos extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(119, 119, 119)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jtxtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2))
+                        .addComponent(jbtnBuscador))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(102, 102, 102)
                         .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -72,8 +73,8 @@ public class VerGrupos extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jtxtBuscador)
+                    .addComponent(jbtnBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(42, 42, 42)
                 .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(49, Short.MAX_VALUE))
@@ -99,6 +100,7 @@ public class VerGrupos extends javax.swing.JFrame {
 
     public void generarBotones() {
         try {
+            // Tu código de conexión a la base de datos...
             Connection conexion = conectar.conectar();
             String query = "SELECT Grupo.grupo, CicloEscolar.cicloEscolar "
                     + "FROM Grupo "
@@ -106,10 +108,12 @@ public class VerGrupos extends javax.swing.JFrame {
                     + "JOIN CicloEscolar ON InfoGrupo.id_cicloEscolar = CicloEscolar.id_cicloEscolar";
             PreparedStatement preparedStatement = conexion.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
-            JPanel panelGrupos = new JPanel();  
+
+            JPanel panelGrupos = new JPanel();
             panelGrupos.setBackground(new Color(108, 23, 43));
             panelGrupos.setLayout(null);
             int y = 30;
+
             while (resultSet.next()) {
                 String nombreGrupo = resultSet.getString("grupo");
                 String cicloEscolar = resultSet.getString("cicloEscolar");
@@ -120,7 +124,7 @@ public class VerGrupos extends javax.swing.JFrame {
                 Font personalizar = new Font("Times New Roman", Font.BOLD, 18);
                 etiqueta.setFont(personalizar);
                 boton.setFont(personalizar);
-                etiqueta.setForeground(white);
+                etiqueta.setForeground(Color.WHITE);
                 etiqueta.setBounds(75, y, 150, 30);
                 boton.setBounds(250, y, 100, 30);
 
@@ -130,19 +134,23 @@ public class VerGrupos extends javax.swing.JFrame {
                         VGVer grupo = new VGVer();
                         grupo.setValor(nombreGrupo, cicloEscolar);
                         grupo.setVisible(true);
+                        generarBotones();
                     }
                 });
+
+                componentes.add(etiqueta);
+                componentes.add(boton);
 
                 panelGrupos.add(etiqueta);
                 panelGrupos.add(boton);
 
                 y += 50;
             }
-             panelGrupos.setPreferredSize(new Dimension(panelGrupos.getWidth(), y));
+
+            panelGrupos.setPreferredSize(new Dimension(panelGrupos.getWidth(), y));
             jScrollPane.setViewportView(panelGrupos);
             jScrollPane.validate();
             jScrollPane.repaint();
-
             conectar.cerrarConexion();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);
@@ -167,9 +175,40 @@ public class VerGrupos extends javax.swing.JFrame {
         this.dispose();
     }
 
-    private void jTextField1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusGained
-        jTextField1.setText("");
-    }//GEN-LAST:event_jTextField1FocusGained
+    private void jbtnBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnBuscadorActionPerformed
+        String textoBusqueda = jtxtBuscador.getText().toLowerCase();
+        int y = 30; // Reinicializa la posición y
+        for (Component componente : componentes) {
+            if (componente instanceof JLabel) {
+                JLabel etiqueta = (JLabel) componente;
+                String nombreGrupo = etiqueta.getText().toLowerCase();
+
+                // Utiliza startsWith para mostrar solo los grupos que comienzan con el texto de búsqueda
+                boolean grupoCoincide = nombreGrupo.startsWith(textoBusqueda);
+                etiqueta.setVisible(grupoCoincide);
+
+                // Encuentra el botón correspondiente al grupo actual
+                int indice = componentes.indexOf(etiqueta);
+                if (indice + 1 < componentes.size()) {
+                    JButton boton = (JButton) componentes.get(indice + 1);
+                    boton.setVisible(grupoCoincide);
+
+                    // Ajusta la posición del grupo y el botón si es visible
+                    if (grupoCoincide) {
+                        etiqueta.setBounds(75, y, 150, 30);
+                        boton.setBounds(250, y, 100, 30);
+                        y += 50;
+                    }
+                }
+            }
+        }
+        jtxtBuscador.setText("");
+        if (textoBusqueda.isEmpty()) {
+            for (Component componente : componentes) {
+                componente.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_jbtnBuscadorActionPerformed
 
     /**
      * @param args the command line arguments
@@ -207,9 +246,9 @@ public class VerGrupos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton jbtnBuscador;
+    private javax.swing.JTextField jtxtBuscador;
     // End of variables declaration//GEN-END:variables
 }

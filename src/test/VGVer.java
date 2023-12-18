@@ -6,6 +6,7 @@ package test;
 
 import coneccion.*;
 import damain.ContadorID;
+import damain.ExportarExcel;
 import damain.ObtenerID;
 import static java.awt.Color.white;
 import java.awt.Font;
@@ -24,6 +25,7 @@ import javax.swing.table.*;
 public class VGVer extends javax.swing.JFrame {
 
     static String idd_grupo = "";
+    static String idd_cicloescolar = "";
     Conexion conectar = Conexion.getInstance();
 
     public VGVer() {
@@ -31,6 +33,9 @@ public class VGVer extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("INFORMACIÓN GRUPO");
         regresar();
+        setValor(idd_grupo, idd_cicloescolar);
+        idd_grupo = "";
+        idd_cicloescolar = "";
     }
 
     @SuppressWarnings("unchecked")
@@ -188,6 +193,7 @@ public class VGVer extends javax.swing.JFrame {
 
     public void setValor(String id_grupo, String cicloEscolar) {
         idd_grupo = id_grupo;
+        idd_cicloescolar = cicloEscolar;
         Font personalizar = new Font("Times New Roman", Font.BOLD, 28);
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
         JLabel etiqueta = new JLabel(id_grupo + "-" + cicloEscolar);
@@ -442,7 +448,13 @@ public class VGVer extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jbtnAsistenciaActionPerformed
     private void jbtnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnExportarActionPerformed
-
+        String grupo = idd_grupo;
+        String ciclo = idd_cicloescolar;
+        try {
+            ExportarExcel.exportarHojaAsistencia(conectar, grupo, grupo + ciclo);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_jbtnExportarActionPerformed
 
     private void jbtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEliminarActionPerformed

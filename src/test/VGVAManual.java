@@ -340,17 +340,22 @@ public class VGVAManual extends javax.swing.JFrame {
                             int id_InfoAlumno = resultadoInfoAlumno.getInt("id_infoAlumno");
 
                             insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
-
+                            jtxtBoleta.setText("");
+                            jtxtNombre.setText("");
                             actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, id_InfoAlumno);
 
                         } else {
                             int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
                             if (opcion == JOptionPane.YES_OPTION) {
                                 agregarAlumnoAGrupo(conexion, id_boleta);
+                                jtxtBoleta.setText("");
+                                jtxtNombre.setText("");
                             }
                         }
                     } else {
                         agregarNuevoAlumno(conexion, boleta);
+                        jtxtBoleta.setText("");
+                        jtxtNombre.setText("");
                     }
                 }
             }

@@ -4,9 +4,18 @@
  */
 package test;
 
+import coneccion.*;
+import java.sql.*;
+import damain.ContadorID;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import static test.VGVAManual.idd;
 
 /**
  *
@@ -14,11 +23,16 @@ import javax.swing.JFrame;
  */
 public class VGAsistencia extends javax.swing.JFrame {
 
+    Conexion conectar = Conexion.getInstance();
+
     public VGAsistencia() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("ESCANEAR");
+        this.setVisible(true);
         regresar();
+        escanearYActualizarTabla();
+
     }
 
     /**
@@ -124,7 +138,7 @@ public class VGAsistencia extends javax.swing.JFrame {
     public void regresar() {
         try {
             this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            addWindowListener(new WindowAdapter(){
+            addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
                     pantallaAnterior();
@@ -140,7 +154,244 @@ public class VGAsistencia extends javax.swing.JFrame {
         VGVer vVer = new VGVer();
         vVer.setVisible(true);
     }
-    
+
+    public void setValor(String grupo) {
+        idd = -1;
+        try {
+            Connection conexion = conectar.conectar();
+            String query = "SELECT id_grupo FROM Grupo WHERE grupo = ?";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                preparedStatement.setString(1, grupo);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        idd = resultSet.getInt("id_grupo");
+                    }
+                }
+            }
+            conectar.cerrarConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int obtenerIdAlumnoPorBoleta(String boleta) {
+        int idAlumno = -1;
+        try {
+            Connection conexion = conectar.conectar();
+            String query = "SELECT id_alumno FROM Alumno WHERE boleta = ?";
+            try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
+                preparedStatement.setString(1, boleta);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        idAlumno = resultSet.getInt("id_alumno");
+                    }
+                }
+            }
+            conectar.cerrarConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return idAlumno;
+    }
+
+    private void insertarAsistencia(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+        String consultaAsistencia = "INSERT INTO Asistencia (id_asistencia, id_InfoAlumno, asistencia, fecha) VALUES (?, ?, 'x', CURRENT_DATE)";
+        try (PreparedStatement pstmtAsistencia = conexion.prepareStatement(consultaAsistencia)) {
+            pstmtAsistencia.setInt(1, id_asistencia);
+            pstmtAsistencia.setInt(2, id_InfoAlumno);
+            pstmtAsistencia.executeUpdate();
+        }
+    }
+
+    private void actualizarIdAsistenciaEnInfoAlumno(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+        String consultaActualizarIdAsistencia = "UPDATE InfoAlumno SET id_asistencia = ? WHERE id_infoAlumno = ?";
+        try (PreparedStatement pstmtActualizarIdAsistencia = conexion.prepareStatement(consultaActualizarIdAsistencia)) {
+            pstmtActualizarIdAsistencia.setInt(1, id_asistencia);
+            pstmtActualizarIdAsistencia.setInt(2, id_InfoAlumno);
+            pstmtActualizarIdAsistencia.executeUpdate();
+        }
+    }
+
+    private void agregarAlumnoAGrupo(Connection conexion, int id_boleta) throws SQLException {
+        try {
+            conexion.setAutoCommit(false); // Comienza la transacción
+
+            if (!existeAlumnoEnGrupo(conexion, id_boleta, idd)) {
+                int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+                insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+                String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+                try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+                    pstmtInsertar.setInt(1, id_InfoAlumno);
+                    pstmtInsertar.setInt(2, id_boleta);
+                    pstmtInsertar.setInt(3, id_asistencia);
+                    pstmtInsertar.setInt(4, idd);
+                    pstmtInsertar.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            conexion.commit(); // Confirma la transacción
+            conexion.setAutoCommit(true); // Restaura el modo de autocommit
+        } catch (SQLException e) {
+            conexion.rollback(); // En caso de error, realiza un rollback
+            e.printStackTrace();
+        }
+    }
+
+    private void agregarNuevoAlumno(Connection conexion, String boleta, String nombreAlumno) throws SQLException {
+        if (!existeAlumno(conexion, boleta)) {
+            int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                try {
+                    String consultaInsertarAlumno = "INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)";
+                    try (PreparedStatement pstmtInsertarAlumno = conexion.prepareStatement(consultaInsertarAlumno)) {
+                        int nuevoIdAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
+                        pstmtInsertarAlumno.setInt(1, nuevoIdAlumno);
+                        pstmtInsertarAlumno.setString(2, nombreAlumno);
+                        pstmtInsertarAlumno.setString(3, boleta);
+                        pstmtInsertarAlumno.executeUpdate();
+
+                        int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                        int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+                        insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+                        String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+                        try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+                            pstmtInsertar.setInt(1, id_InfoAlumno);
+                            pstmtInsertar.setInt(2, nuevoIdAlumno);
+                            pstmtInsertar.setInt(3, id_asistencia);
+                            pstmtInsertar.setInt(4, idd);
+                            pstmtInsertar.executeUpdate();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "El alumno ya existe en la base de datos.");
+            int id_boleta = obtenerIdAlumnoPorBoleta(boleta);
+            agregarAlumnoAGrupo(conexion, id_boleta);
+        }
+    }
+
+    private boolean existeAlumno(Connection conexion, String boleta) {
+        String consultaExisteAlumno = "SELECT COUNT(*) FROM Alumno WHERE boleta = ?";
+        try (PreparedStatement pstmtExisteAlumno = conexion.prepareStatement(consultaExisteAlumno)) {
+            pstmtExisteAlumno.setString(1, boleta);
+            try (ResultSet resultSet = pstmtExisteAlumno.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean existeAlumnoEnGrupo(Connection conexion, int id_boleta, int id_grupo) throws SQLException {
+        String consultaExisteAlumnoEnGrupo = "SELECT COUNT(*) FROM InfoAlumno WHERE id_alumno = ? AND id_grupo = ?";
+        try (PreparedStatement pstmtExisteAlumnoEnGrupo = conexion.prepareStatement(consultaExisteAlumnoEnGrupo)) {
+            pstmtExisteAlumnoEnGrupo.setInt(1, id_boleta);
+            pstmtExisteAlumnoEnGrupo.setInt(2, id_grupo);
+            try (ResultSet resultSet = pstmtExisteAlumnoEnGrupo.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void escanearYActualizarTabla(String url) {
+        try {
+            // Conecta y obtén el HTML de la página
+            Document doc = Jsoup.connect(url).timeout(20000).get();
+
+            // Busca el div con el nombre del alumno
+            Element nombreDiv = doc.select("div.nombre").first();
+            String nombre = nombreDiv.text();
+
+            // Busca el div con la boleta del alumno
+            Element boletaDiv = doc.select("div.boleta").first();
+            String boleta = boletaDiv.text();
+
+            // Resto del código para obtener el id_boleta, id_grupo, y realizar operaciones en la base de datos
+            int id_boleta = obtenerIdAlumnoPorBoleta(boleta);
+            int id_grupo = idd;
+            System.out.println("id_grupo = " + id_grupo);
+            try (Connection conexion = conectar.conectar()) {
+                String consultaInfoAlumno = "SELECT id_infoAlumno, id_alumno, id_grupo FROM InfoAlumno WHERE id_alumno = ?";
+
+                try (PreparedStatement pstmtInfoAlumno = conexion.prepareStatement(consultaInfoAlumno)) {
+                    pstmtInfoAlumno.setInt(1, id_boleta);
+
+                    try (ResultSet resultadoInfoAlumno = pstmtInfoAlumno.executeQuery()) {
+                        if (resultadoInfoAlumno.next()) {
+                            int id_alumno = resultadoInfoAlumno.getInt("id_alumno");
+                            int id_grupo_infoAlumno = resultadoInfoAlumno.getInt("id_grupo");
+
+                            if (id_grupo_infoAlumno == id_grupo && id_boleta == id_alumno) {
+                                int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                                int id_InfoAlumno = resultadoInfoAlumno.getInt("id_infoAlumno");
+
+                                insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+
+                                actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, id_InfoAlumno);
+
+                            } else {
+                                int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                                if (opcion == JOptionPane.YES_OPTION) {
+                                    agregarAlumnoAGrupo(conexion, id_boleta);
+                                }
+                            }
+                        } else {
+                            agregarNuevoAlumno(conexion, boleta, nombre);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            System.out.println(nombre);
+            System.out.println(boleta);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void escanearYActualizarTabla() {
+        String[] urls = {
+            "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591",
+            "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a",
+            "https://servicios.dae.ipn.mx/vcred/?h=c92fa41372f982e9dca8dd5279d716d22a455294d25ca7478538a0ab7a42a48",
+            "https://servicios.dae.ipn.mx/vcred/?h=482acbf3777c163de4f71ad1fc8236f6c051f771d0b603415cb06acbec7ba0f3",
+            "https://servicios.dae.ipn.mx/vcred/?h=6a7a85df84680cfc8cc4d1bad923bd7d58dfd9e591b1723dc7bef59b69cd7892",
+            "https://servicios.dae.ipn.mx/vcred/?h=1254d859a618aa487739e4497b9cd79f507727edc9a3723eaa3e32534f892d0c",
+            "https://servicios.dae.ipn.mx/vcred/?h=ab63b236108f9eb726bd39d02c25dc1c09eb8b368c6ddd4ae0c8bdef86622c09",
+            "https://servicios.dae.ipn.mx/vcred/?h=d3ef137d3134699d177f68391da5af68b260b340d2e879d58050e3a8a91ade1a",
+            "https://servicios.dae.ipn.mx/vcred/?h=21b5a3a7eae520f62028809d9c2ab2746b50db7c58688804e2fd4017f443f439",
+            "https://servicios.dae.ipn.mx/vcred/?h=e46844f94daed102ba49c663e4e3a4c4152f50ad14ba5a534c0ceaaa49d7e105"
+        };
+        for (String url : urls) {
+            escanearYActualizarTabla(url);
+        }
+    }
+
+
     private void jbtnManualAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnManualAActionPerformed
         // TODO add your handling code here:
         VGVAManual manual = new VGVAManual();

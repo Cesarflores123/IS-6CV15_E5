@@ -22,6 +22,7 @@ public class CrearGrupo extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CREAR GRUPO");
+        
         regresar();
         cargarAsignaturas();
         cargarCiclos();
@@ -344,6 +345,7 @@ public class CrearGrupo extends javax.swing.JFrame {
     }
 
     private void jbtnEscanearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnEscanearActionPerformed
+        this.dispose();
         CGEscanear escanear = new CGEscanear();
         escanear.setVisible(true);
         try {
@@ -395,7 +397,7 @@ public class CrearGrupo extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);
         }
-        this.dispose();
+        
     }//GEN-LAST:event_jbtnEscanearActionPerformed
 
     private void txt_ApaternoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_ApaternoKeyTyped

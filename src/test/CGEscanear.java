@@ -20,11 +20,14 @@ public class CGEscanear extends javax.swing.JFrame {
 
     Conexion conectar = Conexion.getInstance();
     int id_grupo;
+    private boolean escaneoActivo = false;
+    private StringBuilder codigoQRBuilder = new StringBuilder();
 
     public CGEscanear() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("AGREGAR ALUMNOS");
+        this.setVisible(true);
         regresar();
         escanearYActualizarTabla();
     }
@@ -162,13 +165,30 @@ public class CGEscanear extends javax.swing.JFrame {
         this.dispose();
     }
 
-    public void escanearYActualizarTabla() {
-        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
-        String urlC = "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591";
-        String urlE = "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a";
+     private void insertarAsistencia(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+         String consultaAsistencia = "INSERT INTO Asistencia (id_asistencia, id_InfoAlumno, asistencia, fecha) VALUES (?, ?, 'x', CURRENT_DATE)";
+        try (PreparedStatement pstmtAsistencia = conexion.prepareStatement(consultaAsistencia)) {
+            pstmtAsistencia.setInt(1, id_asistencia);
+            pstmtAsistencia.setInt(2, id_InfoAlumno);
+            pstmtAsistencia.executeUpdate();
+        }
+    }
+
+    private void actualizarIdAsistenciaEnInfoAlumno(Connection conexion, int id_asistencia, int id_InfoAlumno) throws SQLException {
+        String consultaActualizarIdAsistencia = "UPDATE InfoAlumno SET id_asistencia = ? WHERE id_infoAlumno = ?";
+        try (PreparedStatement pstmtActualizarIdAsistencia = conexion.prepareStatement(consultaActualizarIdAsistencia)) {
+            pstmtActualizarIdAsistencia.setInt(1, id_asistencia);
+            pstmtActualizarIdAsistencia.setInt(2, id_InfoAlumno);
+            pstmtActualizarIdAsistencia.executeUpdate();
+        }
+    }
+    
+    public void escanearYActualizarTabla(String url) {
+        //DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"BOLETA", "NOMBRE"}, 0);
+
         try {
             // Conecta y obtén el HTML de la página
-            Document doc = Jsoup.connect(urlE).timeout(20000).get();
+            Document doc = Jsoup.connect(url).timeout(20000).get();
 
             // Busca el div con el nombre del alumno
             Element nombreDiv = doc.select("div.nombre").first();
@@ -180,12 +200,30 @@ public class CGEscanear extends javax.swing.JFrame {
             System.out.println(nombre);
             System.out.println(boleta);
 
+            // Agrega una nueva fila a la tabla
+            DefaultTableModel tableModel = (DefaultTableModel) jtableAlumno.getModel();
             tableModel.addRow(new Object[]{boleta, nombre});
             tableModel.fireTableDataChanged();
-            jtableAlumno.setModel(tableModel);
-
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void escanearYActualizarTabla() {
+        String[] urls = {
+            "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591",
+            "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a",
+            "https://servicios.dae.ipn.mx/vcred/?h=c92fa41372f982e9dca8dd5279d716d22a455294d25ca7478538a0ab7a42a48",
+            "https://servicios.dae.ipn.mx/vcred/?h=482acbf3777c163de4f71ad1fc8236f6c051f771d0b603415cb06acbec7ba0f3",
+            "https://servicios.dae.ipn.mx/vcred/?h=6a7a85df84680cfc8cc4d1bad923bd7d58dfd9e591b1723dc7bef59b69cd7892",
+            "https://servicios.dae.ipn.mx/vcred/?h=1254d859a618aa487739e4497b9cd79f507727edc9a3723eaa3e32534f892d0c",
+            "https://servicios.dae.ipn.mx/vcred/?h=ab63b236108f9eb726bd39d02c25dc1c09eb8b368c6ddd4ae0c8bdef86622c09",
+            "https://servicios.dae.ipn.mx/vcred/?h=d3ef137d3134699d177f68391da5af68b260b340d2e879d58050e3a8a91ade1a",
+            "https://servicios.dae.ipn.mx/vcred/?h=21b5a3a7eae520f62028809d9c2ab2746b50db7c58688804e2fd4017f443f439",
+            "https://servicios.dae.ipn.mx/vcred/?h=e46844f94daed102ba49c663e4e3a4c4152f50ad14ba5a534c0ceaaa49d7e105"
+        };
+        for (String url : urls) {
+            escanearYActualizarTabla(url);
         }
     }
 
@@ -201,32 +239,50 @@ public class CGEscanear extends javax.swing.JFrame {
             try {
                 Connection conexion = conectar.conectar();
                 conexion.setAutoCommit(false);
+
                 PreparedStatement consultarBoleta = conexion.prepareStatement("SELECT id_alumno FROM Alumno WHERE boleta = ?");
                 PreparedStatement insertarAl = conexion.prepareStatement("INSERT INTO Alumno (id_alumno, nombre_completo, boleta) VALUES (?, ?, ?)");
                 PreparedStatement insertarIA = conexion.prepareStatement("INSERT INTO InfoAlumno(id_InfoAlumno, id_alumno, id_grupo) VALUES (?, ?, ?)");
+                int idAlumno = ContadorID.obtenerMaxIdA(conectar) + 1;
+                System.out.println("idAlumno = " + idAlumno);
+                int idInfoAlumno = ContadorID.obtenerMaxId(conectar, "infoalumno") + 1;
+                System.out.println("idInfoAlumno = " + idInfoAlumno);
+                int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+                
+                
                 for (int fila = 0; fila < jtableAlumno.getRowCount(); fila++) {
+
                     String boleta = jtableAlumno.getValueAt(fila, 0).toString().trim();
                     String nombre = jtableAlumno.getValueAt(fila, 1).toString().trim();
-                    int idAlumno = ContadorID.obtenerMaxId(conectar, "alumno") + 1;
-                    int idIAlumno = ContadorID.obtenerMaxId(conectar, "infoalumno") + 1;
                     // Consultar si la boleta ya existe
                     consultarBoleta.setString(1, boleta);
                     ResultSet resultSet = consultarBoleta.executeQuery();
+
                     if (resultSet.next()) {
                         int idAlumnoExistente = resultSet.getInt("id_alumno");
-                        insertarIA.setInt(1, idIAlumno);
+                        insertarIA.setInt(1, idInfoAlumno);
                         insertarIA.setInt(2, idAlumnoExistente);
                         insertarIA.setInt(3, id_grupo);
+                        insertarIA.executeUpdate();
+                        insertarAsistencia(conexion, id_asistencia, idInfoAlumno);
+                        actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, idInfoAlumno);
+                        idInfoAlumno++;
+                        id_asistencia++;
                     } else {
                         insertarAl.setInt(1, idAlumno);
                         insertarAl.setString(2, nombre);
                         insertarAl.setString(3, boleta);
                         insertarAl.executeUpdate();
 
-                        insertarIA.setInt(1, idIAlumno);
+                        insertarIA.setInt(1, idInfoAlumno);
                         insertarIA.setInt(2, idAlumno);
                         insertarIA.setInt(3, id_grupo);
                         insertarIA.executeUpdate();
+                        insertarAsistencia(conexion, id_asistencia, idInfoAlumno);
+                        actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, idInfoAlumno);
+                        idInfoAlumno++;
+                        id_asistencia++;
+                        idAlumno++;
                     }
 
                 }
@@ -238,6 +294,7 @@ public class CGEscanear extends javax.swing.JFrame {
             tableModel.setRowCount(0);
             jtableAlumno.setModel(tableModel);
             this.dispose();
+            escaneoActivo = false;
         }
 
     }//GEN-LAST:event_jbtnFinalizarActionPerformed

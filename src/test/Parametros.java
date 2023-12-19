@@ -6,9 +6,11 @@ package test;
 
 import coneccion.*;
 import damain.ContadorID;
+import damain.TextPrompt;
 import java.awt.event.*;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -21,6 +23,9 @@ public class Parametros extends javax.swing.JFrame {
         this.setTitle("PARAMETROS");
         this.setLocationRelativeTo(null);
         regresar();
+        TextPrompt placeholderM = new TextPrompt("Materia", jtxtMateria);
+        TextPrompt placeholderC = new TextPrompt("CicloEscolar ej.20241", jtxtCiclo);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -173,20 +178,43 @@ public class Parametros extends javax.swing.JFrame {
         vInicio.setVisible(true);
     }
 
+    private boolean elementoExiste(Connection conexion, String tabla, String campo, String valor) throws SQLException {
+        String consulta = "SELECT COUNT(*) FROM " + tabla + " WHERE " + campo + " = ?";
+        try (PreparedStatement statement = conexion.prepareStatement(consulta)) {
+            statement.setString(1, valor);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0; // Devuelve true si existe al menos un registro con ese valor
+                }
+            }
+        }
+        return false;
+    }
     private void jbtnMateriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnMateriaActionPerformed
         try {
             Connection conexion = conectar.conectar();
             conexion.setAutoCommit(false);
-            PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura (id_asignatura, asignatura) values(?, ?)");
-            int idAsignatura = ContadorID.obtenerMaxId(conectar, "asignatura") + 1;
-            insertara.setInt(1, idAsignatura);
-            insertara.setString(2, jtxtMateria.getText().trim());
-            insertara.executeUpdate();
-            
-            jtxtMateria.setText("");
-            
-            conexion.commit();
-            JOptionPane.showMessageDialog(null, "Dato Registrado");
+
+            // Verificar si la asignatura ya existe
+            String nombreAsignatura = jtxtMateria.getText().trim();
+            if (elementoExiste(conexion, "asignatura", "asignatura",nombreAsignatura)) {
+                JOptionPane.showMessageDialog(null, "La asignatura ya existe");
+                jtxtMateria.setText("");
+            } else {
+                // La asignatura no existe, proceder a insertarla
+                PreparedStatement insertara = conexion.prepareStatement("INSERT INTO asignatura (id_asignatura, asignatura) VALUES (?, ?)");
+                int idAsignatura = ContadorID.obtenerMaxId(conectar, "asignatura") + 1;
+                insertara.setInt(1, idAsignatura);
+                insertara.setString(2, nombreAsignatura);
+                insertara.executeUpdate();
+
+                jtxtMateria.setText("");
+
+                conexion.commit();
+                JOptionPane.showMessageDialog(null, "Dato Registrado");
+            }
+
             conectar.cerrarConexion();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);
@@ -211,16 +239,24 @@ public class Parametros extends javax.swing.JFrame {
         try {
             Connection conexion = conectar.conectar();
             conexion.setAutoCommit(false);
-            PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar (id_cicloEscolar, cicloEscolar) values(?, ?)");
-            int idCicloEscolar = ContadorID.obtenerMaxId(conectar, "cicloEscolar") + 1;
-            insertarc.setInt(1, idCicloEscolar);
-            insertarc.setString(2, jtxtCiclo.getText().trim());
-            insertarc.executeUpdate();
-            
-            jtxtCiclo.setText("");
-            
-            conexion.commit();
-            JOptionPane.showMessageDialog(null, "Dato Registrado");
+            // Verificar si la asignatura ya existe
+            String nombreCiclo = jtxtCiclo.getText().trim();
+            if (elementoExiste(conexion, "cicloescolar", "cicloescolar", nombreCiclo)) {
+                JOptionPane.showMessageDialog(null, "El ciclo Escolar ya existe");
+                jtxtCiclo.setText("");
+            } else {
+                PreparedStatement insertarc = conexion.prepareStatement("INSERT INTO cicloescolar (id_cicloEscolar, cicloEscolar) values(?, ?)");
+                int idCicloEscolar = ContadorID.obtenerMaxId(conectar, "cicloEscolar") + 1;
+                insertarc.setInt(1, idCicloEscolar);
+                insertarc.setString(2, jtxtCiclo.getText().trim());
+                insertarc.executeUpdate();
+
+                jtxtCiclo.setText("");
+
+                conexion.commit();
+                JOptionPane.showMessageDialog(null, "Dato Registrado");
+            }
+
             conectar.cerrarConexion();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e);

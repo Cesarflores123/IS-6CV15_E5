@@ -276,8 +276,8 @@ public class ExportarExcel {
 
     public static void llenarDatosAlumnosAsistencias(Sheet sheet, List<AlumnoAsistencia> alumnos, Set<String> fechasUnicas) {
         // Llenar filas con datos de alumnos y asistencias
-
         int currentRow = 7;
+
         for (AlumnoAsistencia alumno : alumnos) {
             Row rowAlumno = sheet.createRow(currentRow);
             rowAlumno.createCell(0).setCellValue(alumno.getNombreCompleto());
@@ -285,6 +285,7 @@ public class ExportarExcel {
 
             // Llenar celdas de asistencia para cada fecha
             int columnaActual = 2;
+
             for (String fechaUnica : fechasUnicas) {
                 String marcaAsistencia = alumno.getAsistencias().getOrDefault(fechaUnica, "");
                 rowAlumno.createCell(columnaActual++).setCellValue(fechaUnica);
@@ -293,6 +294,16 @@ public class ExportarExcel {
 
             // Incrementar el índice de fila actual
             currentRow++;
+        }
+
+        // Agregar alumnos sin asistencia
+        for (AlumnoAsistencia alumno : alumnos) {
+            if (alumno.getAsistencias().isEmpty()) {
+                Row rowAlumno = sheet.createRow(currentRow);
+                rowAlumno.createCell(0).setCellValue(alumno.getNombreCompleto());
+                rowAlumno.createCell(1).setCellValue(alumno.getBoleta());
+                currentRow++;
+            }
         }
     }
 

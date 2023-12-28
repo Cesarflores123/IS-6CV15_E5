@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class ExportarExcel {
             // Nombres de columnas
             llenarEncabezadosFechas(sheet, alumnos);
 
+            Collections.sort(alumnos, (a1, a2) -> a1.getNombreCompleto().compareToIgnoreCase(a2.getNombreCompleto()));
             // Llenar filas con datos de alumnos y asistencias
             llenarDatosAlumnosAsistencias(sheet, alumnos, fechasUnicas);
 
@@ -70,7 +72,7 @@ public class ExportarExcel {
             observacionesCell.setCellValue("Observaciones");
 
 // Obtener observaciones
-            List<String> observaciones = obtenerObservaciones(conectar, idGrupo);
+            List<Observacion> observaciones = obtenerObservaciones(conectar, idGrupo);
 
 // Crear fila 38 y agrupar las primeras 8 columnas
             Row row39 = sheet.getRow(38);
@@ -98,7 +100,7 @@ public class ExportarExcel {
 
 // Concatenar todas las observaciones con saltos de línea
             StringBuilder observacionesText = new StringBuilder();
-            for (String observacion : observaciones) {
+            for (Observacion observacion : observaciones) {
                 observacionesText.append(observacion).append("\n");
             }
 
@@ -361,18 +363,21 @@ public class ExportarExcel {
         return null;
     }
 
-    public static List<String> obtenerObservaciones(Conexion conectar, int idGrupo) {
-        List<String> observacionesList = new ArrayList<>();
+    public static List<Observacion> obtenerObservaciones(Conexion conectar, int idGrupo) {
+        List<Observacion> observacionesList = new ArrayList<>();
         try {
             Connection conexion = conectar.conectar();
-            String query = "SELECT observacion FROM Observaciones WHERE id_InfoGrupo IN (SELECT id_InfoGrupo FROM InfoGrupo WHERE id_grupo = ?)";
+            String query = "SELECT observacion, fecha FROM Observaciones WHERE id_InfoGrupo IN (SELECT id_InfoGrupo FROM InfoGrupo WHERE id_grupo = ?)";
             try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
                 preparedStatement.setInt(1, idGrupo);
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
                     String observacion = resultSet.getString("observacion");
-                    observacionesList.add(observacion);
+                    Date fecha = resultSet.getDate("fecha");
+                    
+                    Observacion observacionObj = new Observacion(observacion, fecha);
+                    observacionesList.add(observacionObj);
                 }
             }
         } catch (SQLException e) {

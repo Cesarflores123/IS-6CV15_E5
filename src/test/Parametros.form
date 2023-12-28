@@ -164,6 +164,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="jtxtCiclo">
           <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jtxtCicloActionPerformed"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jtxtCicloKeyTyped"/>
           </Events>
         </Component>

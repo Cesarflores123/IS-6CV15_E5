@@ -13,8 +13,6 @@ import java.awt.Font;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -23,7 +21,6 @@ import javax.swing.table.*;
  * @author Gabriela
  */
 public class VGVer extends javax.swing.JFrame {
-
     static String idd_grupo = "";
     static String idd_cicloescolar = "";
     Conexion conectar = Conexion.getInstance();
@@ -34,8 +31,7 @@ public class VGVer extends javax.swing.JFrame {
         this.setTitle("INFORMACIÓN GRUPO");
         regresar();
         setValor(idd_grupo, idd_cicloescolar);
-        idd_grupo = "";
-        idd_cicloescolar = "";
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -192,6 +188,8 @@ public class VGVer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public void setValor(String id_grupo, String cicloEscolar) {
+        idd_grupo = "";
+        idd_cicloescolar = "";
         idd_grupo = id_grupo;
         idd_cicloescolar = cicloEscolar;
         Font personalizar = new Font("Times New Roman", Font.BOLD, 28);
@@ -205,11 +203,12 @@ public class VGVer extends javax.swing.JFrame {
         try {
             Connection conexion = conectar.conectar();
             String query = "SELECT Alumno.nombre_completo, Alumno.boleta "
-                    + "FROM Alumno "
-                    + "JOIN InfoAlumno ON Alumno.id_alumno = InfoAlumno.id_alumno "
-                    + "JOIN InfoGrupo ON InfoAlumno.id_grupo = InfoGrupo.id_grupo "
-                    + "JOIN Grupo ON InfoGrupo.id_grupo = Grupo.id_grupo "
-                    + "WHERE Grupo.grupo = ?";
+        + "FROM Alumno "
+        + "JOIN InfoAlumno ON Alumno.id_alumno = InfoAlumno.id_alumno "
+        + "JOIN InfoGrupo ON InfoAlumno.id_grupo = InfoGrupo.id_grupo "
+        + "JOIN Grupo ON InfoGrupo.id_grupo = Grupo.id_grupo "
+        + "WHERE Grupo.grupo = ? "
+        + "ORDER BY Alumno.nombre_completo ASC"; 
 
             try (PreparedStatement preparedStatement = conexion.prepareStatement(query)) {
                 preparedStatement.setString(1, id_grupo);
@@ -266,7 +265,7 @@ public class VGVer extends javax.swing.JFrame {
             String contenido = jtxtaObservaciones.getText();
 
             if (!contenido.isEmpty()) {
-                String query = "INSERT INTO Observaciones (id_observacion, observacion, id_infoGrupo) VALUES (?, ?, ?)";
+                String query = "INSERT INTO Observaciones (id_observacion, observacion, id_infoGrupo, fecha) VALUES (?, ?, ?, CURRENT_DATE)";
                 String ActualizarIdObservacion = "UPDATE InfoGrupo SET id_observacion = ? WHERE id_infoGrupo = ?";
                 try (PreparedStatement preparedStatement = conexion.prepareStatement(query); PreparedStatement pstmtActualizarIdOb = conexion.prepareStatement(ActualizarIdObservacion)) {
                     preparedStatement.setInt(1, idObservaciones);

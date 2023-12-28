@@ -86,6 +86,11 @@ public class Parametros extends javax.swing.JFrame {
             }
         });
 
+        jtxtCiclo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtxtCicloActionPerformed(evt);
+            }
+        });
         jtxtCiclo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 jtxtCicloKeyTyped(evt);
@@ -262,6 +267,10 @@ public class Parametros extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error: " + e);
         }
     }//GEN-LAST:event_jbtnCicloActionPerformed
+
+    private void jtxtCicloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtxtCicloActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jtxtCicloActionPerformed
 
     /**
      * @param args the command line arguments

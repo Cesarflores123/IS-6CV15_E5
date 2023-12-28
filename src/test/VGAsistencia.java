@@ -7,6 +7,7 @@ package test;
 import coneccion.*;
 import java.sql.*;
 import damain.ContadorID;
+import damain.QRCodeScanner;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -31,7 +32,9 @@ public class VGAsistencia extends javax.swing.JFrame {
         this.setTitle("ESCANEAR");
         this.setVisible(true);
         regresar();
-        escanearYActualizarTabla();
+        //escanearYActualizarTabla();
+        QRCodeScanner escanear = new QRCodeScanner();
+        escanear.startScanning();
 
     }
 
@@ -82,6 +85,11 @@ public class VGAsistencia extends javax.swing.JFrame {
 
         jbtnFinalizar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jbtnFinalizar.setText("Finalizar");
+        jbtnFinalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnFinalizarActionPerformed(evt);
+            }
+        });
 
         jbtnManualA.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jbtnManualA.setText("Agregar Manualmente");
@@ -216,21 +224,19 @@ public class VGAsistencia extends javax.swing.JFrame {
         try {
             conexion.setAutoCommit(false); // Comienza la transacción
 
-            if (!existeAlumnoEnGrupo(conexion, id_boleta, idd)) {
-                int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
-                int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
-                insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
+            int id_asistencia = ContadorID.obtenerMaxId(conectar, "asistencia") + 1;
+            int id_InfoAlumno = ContadorID.obtenerMaxId(conectar, "InfoAlumno") + 1;
+            insertarAsistencia(conexion, id_asistencia, id_InfoAlumno);
 
-                String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
-                try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
-                    pstmtInsertar.setInt(1, id_InfoAlumno);
-                    pstmtInsertar.setInt(2, id_boleta);
-                    pstmtInsertar.setInt(3, id_asistencia);
-                    pstmtInsertar.setInt(4, idd);
-                    pstmtInsertar.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            String insertarInfoAlumno = "INSERT INTO infoAlumno (id_InfoAlumno, id_alumno, id_asistencia, id_grupo) VALUES (?,?,?,?)";
+            try (PreparedStatement pstmtInsertar = conexion.prepareStatement(insertarInfoAlumno)) {
+                pstmtInsertar.setInt(1, id_InfoAlumno);
+                pstmtInsertar.setInt(2, id_boleta);
+                pstmtInsertar.setInt(3, id_asistencia);
+                pstmtInsertar.setInt(4, idd);
+                pstmtInsertar.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
             conexion.commit(); // Confirma la transacción
@@ -351,9 +357,12 @@ public class VGAsistencia extends javax.swing.JFrame {
                                 actualizarIdAsistenciaEnInfoAlumno(conexion, id_asistencia, id_InfoAlumno);
 
                             } else {
-                                int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
-                                if (opcion == JOptionPane.YES_OPTION) {
-                                    agregarAlumnoAGrupo(conexion, id_boleta);
+
+                                if (!existeAlumnoEnGrupo(conexion, id_boleta, idd)) {
+                                    int opcion = JOptionPane.showConfirmDialog(null, "Alumno no existente \n ¿Desea agregarlo?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                                    if (opcion == JOptionPane.YES_OPTION) {
+                                        agregarAlumnoAGrupo(conexion, id_boleta);
+                                    }
                                 }
                             }
                         } else {
@@ -373,10 +382,10 @@ public class VGAsistencia extends javax.swing.JFrame {
         }
     }
 
-    public void escanearYActualizarTabla() {
+    /*public void escanearYActualizarTabla() {
         String[] urls = {
             "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591",
-            "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a",
+            "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a"
             "https://servicios.dae.ipn.mx/vcred/?h=c92fa41372f982e9dca8dd5279d716d22a455294d25ca7478538a0ab7a42a48",
             "https://servicios.dae.ipn.mx/vcred/?h=482acbf3777c163de4f71ad1fc8236f6c051f771d0b603415cb06acbec7ba0f3",
             "https://servicios.dae.ipn.mx/vcred/?h=6a7a85df84680cfc8cc4d1bad923bd7d58dfd9e591b1723dc7bef59b69cd7892",
@@ -389,7 +398,7 @@ public class VGAsistencia extends javax.swing.JFrame {
         for (String url : urls) {
             escanearYActualizarTabla(url);
         }
-    }
+    }*/
 
 
     private void jbtnManualAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnManualAActionPerformed
@@ -398,6 +407,16 @@ public class VGAsistencia extends javax.swing.JFrame {
         manual.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jbtnManualAActionPerformed
+
+    private void jbtnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFinalizarActionPerformed
+        // TODO add your handling code here:
+        int opcion = JOptionPane.showConfirmDialog(null, "¿Desea concluir con el pase de lista?", "Confirmacion", JOptionPane.YES_NO_OPTION);
+        if(opcion == JOptionPane.YES_OPTION){
+            VGVer ver = new VGVer();
+            ver.setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_jbtnFinalizarActionPerformed
 
     /**
      * @param args the command line arguments

@@ -20,8 +20,6 @@ public class CGEscanear extends javax.swing.JFrame {
 
     Conexion conectar = Conexion.getInstance();
     int id_grupo;
-    private boolean escaneoActivo = false;
-    private StringBuilder codigoQRBuilder = new StringBuilder();
 
     public CGEscanear() {
         initComponents();
@@ -29,7 +27,9 @@ public class CGEscanear extends javax.swing.JFrame {
         this.setTitle("AGREGAR ALUMNOS");
         this.setVisible(true);
         regresar();
-        escanearYActualizarTabla();
+        QRCodeScanner escanear = new QRCodeScanner();
+        escanear.startScanning();
+        //escanearYActualizarTabla();
     }
 
     /**
@@ -209,23 +209,23 @@ public class CGEscanear extends javax.swing.JFrame {
         }
     }
 
-    public void escanearYActualizarTabla() {
+    /*public void escanearYActualizarTabla() {
         String[] urls = {
-            "https://servicios.dae.ipn.mx/vcred/?h=af07dbbea1784830da72f4cecb5eca0c5eb945c51b6428d537269fc06df5c591",
-            "https://servicios.dae.ipn.mx/vcred/?h=963eea691405fa5c41104cbd2e1729ddd0588f2b36ef02a3ccf4e2fe412fb04a",
-            "https://servicios.dae.ipn.mx/vcred/?h=c92fa41372f982e9dca8dd5279d716d22a455294d25ca7478538a0ab7a42a48",
-            "https://servicios.dae.ipn.mx/vcred/?h=482acbf3777c163de4f71ad1fc8236f6c051f771d0b603415cb06acbec7ba0f3",
-            "https://servicios.dae.ipn.mx/vcred/?h=6a7a85df84680cfc8cc4d1bad923bd7d58dfd9e591b1723dc7bef59b69cd7892",
-            "https://servicios.dae.ipn.mx/vcred/?h=1254d859a618aa487739e4497b9cd79f507727edc9a3723eaa3e32534f892d0c",
-            "https://servicios.dae.ipn.mx/vcred/?h=ab63b236108f9eb726bd39d02c25dc1c09eb8b368c6ddd4ae0c8bdef86622c09",
-            "https://servicios.dae.ipn.mx/vcred/?h=d3ef137d3134699d177f68391da5af68b260b340d2e879d58050e3a8a91ade1a",
-            "https://servicios.dae.ipn.mx/vcred/?h=21b5a3a7eae520f62028809d9c2ab2746b50db7c58688804e2fd4017f443f439",
-            "https://servicios.dae.ipn.mx/vcred/?h=e46844f94daed102ba49c663e4e3a4c4152f50ad14ba5a534c0ceaaa49d7e105"
+            "https://servicios.dae.ipn.mx/vcred/?h=c92dc665d216a4efdeaa796b50a3aa854a16279cf7293befe610fc5e366067f0",
+            "https://servicios.dae.ipn.mx/vcred/?h=3cc826172e535d19d9527815e04d528267beffd82ac6e1b0555aeabebeca4a61",
+            "https://servicios.dae.ipn.mx/vcred/?h=a97aa3a97d8ace1bba101f414d4139721f78585d7591cd002ac4b423834a27a6",
+            "https://servicios.dae.ipn.mx/vcred/?h=27e34b3ab0c6bfb35571fd675caa6e75cab09e289b02d2268a4558c16841c0cc",
+
+            "https://servicios.dae.ipn.mx/vcred/?h=48c45c3595d54e2c634f488a6ffe4021aae89bb0080ce1767f009127f2a815da",
+            "https://servicios.dae.ipn.mx/vcred/?h=8bfeebb974b8603ff444ab0181f52de53cc16e74c0013849a5ad198c12499e19",
+            "https://servicios.dae.ipn.mx/vcred/?h=fe09fc5757c0b925e35118b4782893887ce6eb490b8b1fe3eac2af737859655e",
+            "https://servicios.dae.ipn.mx/vcred/?h=8d0ca457518fca24f21b18f2019a232d40ae2a69a499f81afba9a3139f59987d",
+            "https://servicios.dae.ipn.mx/vcred/?h=18011c5ffcfca729f56fd966c3f6ee0ffacdf223200a223dc495f919d702a37d"
         };
         for (String url : urls) {
             escanearYActualizarTabla(url);
         }
-    }
+    }*/
 
     public void setIdGrupo(Integer idGrupo) {
         id_grupo = idGrupo;
@@ -294,7 +294,6 @@ public class CGEscanear extends javax.swing.JFrame {
             tableModel.setRowCount(0);
             jtableAlumno.setModel(tableModel);
             this.dispose();
-            escaneoActivo = false;
         }
 
     }//GEN-LAST:event_jbtnFinalizarActionPerformed
